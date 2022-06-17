@@ -183,11 +183,14 @@ def S_C(C,m_n,T_C_L):
 '''Deformaciones especificas'''
 def D_E(Despz, alto, cant_ey):
     Su = 0
+    count = 0
     for i in range(1,(Despz.index[-1])+1):
         if (Despz.index[i-1])%2==0:
             Su+=abs(Despz[0][i])
+            count+=1
 
-    D_e = Su/(alto*cant_ey)
+    D_e = Su*2/((alto*cant_ey)*count)
+
 
     return D_e
 

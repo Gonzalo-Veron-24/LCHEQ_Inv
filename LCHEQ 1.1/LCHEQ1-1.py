@@ -79,6 +79,22 @@ while True:
 #Carga6= +34,73208359
 #Carga7= +22,63870073
 
+#DefE1= 0.0008542475559706115
+#DefE2= 0.0008636937031978038
+#DefE3= 0.0007220097079934437
+#DefE4= 0.0008760119262548176
+#DefE5= 0.0008782334305642091
+#DefE6= 0.0008801112901505955
+#DefE7= 0.0005736648668135243
+
+#DespProm1= 0.30752912014942013
+#DespProm2= 0.31092973315120936
+#DespProm3= 0.2599234948776397
+#DespProm4= 0.31536429345173433
+#DespProm5= 0.3161640350031153
+#DespProm6= 0.3168400644542144
+#DespProm7= 0.20651935205286875
+
 L1=1
 D_d_E.append(L1)
 
@@ -168,7 +184,7 @@ else:                           #LADRILLO MACIZO
 
     while True:
         try:
-            Cant_C = int(input("\nIngrese la cantidad de cargas a analizar: "))
+            Cant_C = int(input("\nIngrese la cantidad de ensayos a analizar: "))
             break
         except ValueError:
             print("\n¡ERROR! Reingrese!")
