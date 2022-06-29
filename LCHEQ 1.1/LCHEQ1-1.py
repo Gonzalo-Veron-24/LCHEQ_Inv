@@ -130,7 +130,14 @@ else:                           #LADRILLO MACIZO
     Xi = Symbol("Xi")
     ita = Symbol("ita")
     N1,N2,N3,N4=(1/4)*(1-Xi)*(1-ita),(1/4)*(1+Xi)*(1-ita),(1/4)*(1+Xi)*(1+ita),(1/4)*(1-Xi)*(1+ita)
-    Nodo_list=[N1,N2,N3,N4]                        
+    Nodo_list=[N1,N2,N3,N4]
+    
+    T_de_M=datetime.datetime.now()
+    T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)
+
+    H_Excel=pd.ExcelWriter(T_de_Mstr+".xlsx")
+    H1 = pd.DataFrame(Nodo_list, index = ["1","2","3","4"])
+    H1.to_excel(H_Excel, sheet_name='Funciones de Formas', index=False)                     
                                 # DERIVADAS PARCIALES
     DNL=[] #Lista de derivadas de los nodos
     for i in Nodo_list:
@@ -189,16 +196,13 @@ else:                           #LADRILLO MACIZO
         except ValueError:
             print("\n¡ERROR! Reingrese!")
 
-    T_de_M=datetime.datetime.now()
-    T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)
-
-    H_Excel=pd.ExcelWriter(T_de_Mstr+".xlsx")
 
     for i in range(Cant_C):
         
         Carga = cf.validacion_float("\nCarga (N): ")
 
         s_c = cf.S_C(Carga,M_N,T_C_L)
+        s_c.to_excel(H_Excel,sheet_name="Sist. Q={}".format(Carga))
         print("\nSistema de Cargas: \n{}".format(s_c))
 
         #Desplazamientos
@@ -217,10 +221,11 @@ else:                           #LADRILLO MACIZO
         Tensiones = cf.Tn(B, D, D_e_o)
 
         print("\nDesplazamientos:\n{}".format(D_e_o))
-        Desplazamientos.to_excel(H_Excel,sheet_name="{}".format(Carga))
-        Desplazamientos.to_csv('Desplazamientos.csv')
-        H_Excel.save()
+        Desplazamientos.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
+        #Desplazamientos.to_csv('Desplazamientos{}.csv'.format(i+1))
+        
 
         ##Deformacion especifica
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+    H_Excel.save()
