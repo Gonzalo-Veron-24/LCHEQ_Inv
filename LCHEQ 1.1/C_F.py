@@ -190,10 +190,7 @@ def D_E(Despz, alto, cant_ey):
             count+=1
 
     D_e = Su*2/((alto*cant_ey)*count)
-
-
     return D_e
-
 
 def Tn(d,b,dz):
     pass

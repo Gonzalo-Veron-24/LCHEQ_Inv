@@ -147,12 +147,10 @@ else:                           #LADRILLO MACIZO
         DNL.append(dNdita)
                                 # MATRIZ DE ELEMENTOS FINITOS
     M_E_F=cf.M_E(Hx,Vy)
-    print("\n","MATRÍZ DE ELEMENTOS".center(100))
-    print(M_E_F)
+
                                 # MATRIZ DE NODOS
     M_N=cf.M_N(Hx,Vy)
-    print("\n","MATRIZ DE NODOS".center(100))
-    print(M_N)
+
 
     T_C_L=[x for x in range(1,(M_N.size*2)+1)]
 
@@ -160,7 +158,6 @@ else:                           #LADRILLO MACIZO
     C_G_L=cf.T_C(Hx,Vy,M_E_F,M_N)
                                 # DISTANCIAS GENERALES
     D_Generales=cf.D_G(Hx,Vy,Ancho,Alto)
-    print("\n","TABLA DE CONECTIVIDAD".center(100))
     
     C_L = []
     for i in C_G_L.keys():
@@ -179,15 +176,14 @@ else:                           #LADRILLO MACIZO
                                 #MATRICE B Y Bt
     Bt = {}
     B = cf.M_B(A,G,Bt)
+    
                                 #MATRIZ D
     D = cf.M_D(D_d_E)
                                 #MATRICES K
     K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,T,C_G_L)
-    print("\nMatriz K: \n{}".format(K[1]))
     
                                 #ENSAMBLE
     M_E = cf.f_e_B(M_N,K,T_C_L)
-    print("\nMatriz ensamblada: \n{}".format(M_E))
 
     while True:
         try:
@@ -196,6 +192,11 @@ else:                           #LADRILLO MACIZO
         except ValueError:
             print("\n¡ERROR! Reingrese!")
 
+    E = 894
+    Des = {}
+    Cg = {}
+    Sist_c = {}
+    Des_esp = {}
 
     for i in range(Cant_C):
         
@@ -213,9 +214,9 @@ else:                           #LADRILLO MACIZO
 
         D_e_o = pd.DataFrame([0.0 for i in range(len(C_L))],index=C_L)
 
-        for i in Desplazamientos.index:
+        for j in Desplazamientos.index:
             for e in D_e_o.index:
-                if i == e:
+                if j == e:
                     D_e_o[0][e] = Desplazamientos[0][e]
 
         Tensiones = cf.Tn(B, D, D_e_o)
@@ -223,9 +224,25 @@ else:                           #LADRILLO MACIZO
         print("\nDesplazamientos:\n{}".format(D_e_o))
         Desplazamientos.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
         #Desplazamientos.to_csv('Desplazamientos{}.csv'.format(i+1))
-        
-
+        #Df_e = pd.DataFrame(np.dot())
         ##Deformacion especifica
+
+        paso = D_e_o.copy()
+        Des[i+1] = paso
+        for h in range(1,(D_e_o.index[-1])+1):
+            if(D_e_o.index[h-1])%2==0:
+                (D_e_o[0][h])/=Alto
+            else:
+                (D_e_o[0][h])/=Ancho
+
+        Des_esp[i+1] = D_e_o
+        Cg[i+1] = Carga
+        Sist_c[i+1] = s_c
+
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()
+
+    for i in range(1, len(Des)+1):
+        print("\nCarga: {}\nMatriz de desplazamiento: {}".format(Cg[i],Des[i]))
+        print("\nMatriz de desplazamiento especifica: {}\n\n".format(Des_esp[i]))
