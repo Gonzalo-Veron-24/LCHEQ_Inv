@@ -192,5 +192,13 @@ def D_E(Despz, alto, cant_ey):
     D_e = Su*2/((alto*cant_ey)*count)
     return D_e
 
+def B_valores(cl, C_m_b, Xi, ita):
+    contador = 0
+    for i in range(4):
+        for j in range(3):
+            for h in range(8):
+                C_m_b[i+1][j][h] = (((C_m_b[i+1][j][h]).subs(Xi,cl[contador])).subs(ita,cl[contador+1])) 
+        contador+=2  
+
 def Tn(d,b,dz):
     pass

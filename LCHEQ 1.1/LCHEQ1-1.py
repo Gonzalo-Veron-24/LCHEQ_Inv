@@ -7,7 +7,9 @@ from sympy.core.facts import deduce_alpha_implications
 from tqdm.auto import tqdm
 import C_F as cf
 import os
+import copy
 
+pd.options.mode.chained_assignment = None  # default='warn'
 print('¡Bienvenido! Por favor siga las instrucciones'.center(100),"\n","Universidad Nacional de Misiones (UNaM)".center(100),"\n","OBERÁ - MISIONES - ARGENTINA".center(100),"\n\n")
 CL=[-1,-1,1,-1,1,1,-1,1] #COORDENADAS LOCALES (SENTIDO ANTIHORARIO)
 #print("\n","Coordenadas Locales establecidas en sentido horario:".center(90),"\n\n","{}".center(90).format(CL[0]),"\n","{}".center(90).format(CL[1]),"\n","{}".center(90).format(CL[2]),"\n","{}".center(90).format(CL[3]),"\n\n")
@@ -176,6 +178,11 @@ else:                           #LADRILLO MACIZO
                                 #MATRICE B Y Bt
     Bt = {}
     B = cf.M_B(A,G,Bt)
+
+    B_numerico = copy.deepcopy(B) ##B con sus respectivos valores
+    cf.B_valores(CL,B_numerico,Xi,ita)
+    print()
+    print(B_numerico[1])
     
                                 #MATRIZ D
     D = cf.M_D(D_d_E)
