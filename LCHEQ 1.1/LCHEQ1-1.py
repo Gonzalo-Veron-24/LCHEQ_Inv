@@ -201,6 +201,7 @@ else:                           #LADRILLO MACIZO
     Des = {}   
     Des_esp = {}
     ten_m1 = {}
+    cargas_p_ele = {}
     for i in range(Cant_C):
         
         Carga = cf.validacion_float("\nCarga (N): ")
@@ -225,6 +226,7 @@ else:                           #LADRILLO MACIZO
                     Sist_c_o[0][e] = s_c[1][e] 
         
         print("\nSistema de Cargas ordenados por c_l: \n{}".format(Sist_c_o))
+        Sist_c_o.to_excel(H_Excel,sheet_name="Sist ord. Q={}".format(Carga))
 
         print("\nDesplazamientos:\n{}".format(D_e_o))
         D_e_o.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
@@ -248,6 +250,9 @@ else:                           #LADRILLO MACIZO
         ten_m1[i+1] = (D_e_o*E)
         ten_m1[i+1].to_excel(H_Excel,sheet_name="tensiones. Q={}".format(Carga))
         
+        c_p_e = cf.sep_por_elem(Sist_c_o,s_c,C_L)
+        cargas_p_ele[i+1] = c_p_e
+
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()

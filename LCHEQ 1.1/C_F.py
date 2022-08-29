@@ -201,5 +201,18 @@ def B_valores(cl, C_m_b, Xi, ita):
                 C_m_b[i+1][j][h] = (((C_m_b[i+1][j][h]).subs(Xi,cl[contador])).subs(ita,cl[contador+1])) 
         contador+=2  
 
+def sep_por_elem(x,x1,c_l):
+    cargas = []
+    c = 0
+    paso = []
+    for i in (x.index):
+        paso.append(x1[1][i])
+        c+=1
+        if(c==8):
+            cargas.append(paso)
+            paso = []
+            c = 0
+    return cargas
+
 def Tn(d,b,dz):
     pass
