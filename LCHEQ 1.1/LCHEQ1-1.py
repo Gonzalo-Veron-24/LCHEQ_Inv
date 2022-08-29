@@ -201,6 +201,7 @@ else:                           #LADRILLO MACIZO
     Des = {}   
     Des_esp = {}
     ten_m1 = {}
+    tensiones_m2 = {}
     cargas_p_ele = {}
     for i in range(Cant_C):
         
@@ -253,6 +254,16 @@ else:                           #LADRILLO MACIZO
         c_p_e = cf.sep_por_elem(Sist_c_o,s_c,C_L)
         cargas_p_ele[i+1] = c_p_e
 
+        ##TENSIONES METODO 2 D*B*q
+        tensiones_m2[i+1] = cf.tens_m2(Hx,Vy,D,B_numerico,c_p_e) 
+        '''
+        tensiones_m2 es un diccionario que como clave tiene el numero de todos los elementos
+        ej: un valor es 1, el otro 2 y asi hasta 100 que en este caso es nuestro ultimo elemento.
+        Cada uno de esas claves tiene otro diccionario como valor. Dicho diccionario contiene 4 pares
+        clave-valor, las claves son 1,2,3,4 (nodos) y como valor contienen una lista con las 3 tensiones
+        '''
+
+        #Deformacion especifica
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()

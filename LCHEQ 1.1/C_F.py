@@ -214,5 +214,17 @@ def sep_por_elem(x,x1,c_l):
             c = 0
     return cargas
 
+def tens_m2(cx,cy,d,b_n,carg_pe):
+    cant_recor = cx*cy ##cantidad de elementos
+    dicc_ten = {}
+    for i in range(cant_recor):
+        dicc_ten_paso = {}
+        for j in range(1,5):
+            multp1 = np.dot(b_n[j],carg_pe[i]) #matriz B por las cargas del elemento
+            multp2 = np.dot(multp1,d) #el resultado anteriror por D
+            dicc_ten_paso[j] = multp2
+        dicc_ten[i+1] = dicc_ten_paso
+    return dicc_ten
+
 def Tn(d,b,dz):
     pass
