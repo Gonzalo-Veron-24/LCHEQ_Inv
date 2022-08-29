@@ -193,11 +193,9 @@ else:                           #LADRILLO MACIZO
             print("\n¡ERROR! Reingrese!")
 
     E = 894
-    Des = {}
-    Cg = {}
-    Sist_c = {}
+    Des = {}   
     Des_esp = {}
-
+    ten_m1 = {}
     for i in range(Cant_C):
         
         Carga = cf.validacion_float("\nCarga (N): ")
@@ -219,30 +217,29 @@ else:                           #LADRILLO MACIZO
                 if j == e:
                     D_e_o[0][e] = Desplazamientos[0][e]
 
-        Tensiones = cf.Tn(B, D, D_e_o)
 
         print("\nDesplazamientos:\n{}".format(D_e_o))
-        Desplazamientos.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
-        #Desplazamientos.to_csv('Desplazamientos{}.csv'.format(i+1))
-        #Df_e = pd.DataFrame(np.dot())
-        ##Deformacion especifica
+        D_e_o.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
 
-        paso = D_e_o.copy()
+
+        ##Deformacion especifica
+        paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
         Des[i+1] = paso
-        for h in range(1,(D_e_o.index[-1])+1):
-            if(D_e_o.index[h-1])%2==0:
+
+        for h in range(1,(Desplazamientos.index[-1])+1):
+            if h%2==0: 
                 (D_e_o[0][h])/=Alto
             else:
                 (D_e_o[0][h])/=Ancho
 
-        Des_esp[i+1] = D_e_o
-        Cg[i+1] = Carga
-        Sist_c[i+1] = s_c
+        paso2 = D_e_o.copy()
+        Des_esp[i+1] = paso2
+        Des_esp[i+1].to_excel(H_Excel,sheet_name="Desplaz_esp. Q={}".format(Carga))
 
+        ##METODO 1
+        ten_m1[i+1] = (D_e_o*E)
+        ten_m1[i+1].to_excel(H_Excel,sheet_name="tensiones. Q={}".format(Carga))
+        
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()
-
-    for i in range(1, len(Des)+1):
-        print("\nCarga: {}\nMatriz de desplazamiento: {}".format(Cg[i],Des[i]))
-        print("\nMatriz de desplazamiento especifica: {}\n\n".format(Des_esp[i]))
