@@ -192,6 +192,7 @@ def D_E(Despz, alto, cant_ey):
     D_e = Su*2/((alto*cant_ey)*count)
     return D_e
 
+
 def B_valores(cl, C_m_b, Xi, ita):
     contador = 0
     for i in range(4):
