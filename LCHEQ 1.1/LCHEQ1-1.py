@@ -216,15 +216,15 @@ else:                           #LADRILLO MACIZO
         Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=T_C_L)
 
         D_e_o = pd.DataFrame([0.0 for i in range(len(C_L))],index=C_L)
-        #Sist_c_o = pd.DataFrame([0.0 for i in range(len(C_L))],index=C_L)
-
+        Sist_c_o = pd.DataFrame([0.0 for i in range(len(C_L))],index=C_L)
+        
         for j in Desplazamientos.index:
             for e in D_e_o.index:
                 if j == e:
                     D_e_o[0][e] = Desplazamientos[0][e]
-                    #Sist_c_o[0][e] = s_c[0][e] 
+                    Sist_c_o[0][e] = s_c[1][e] 
         
-        #print("\nSistema de Cargas ordenados por c_l: \n{}".format(Sist_c_o))
+        print("\nSistema de Cargas ordenados por c_l: \n{}".format(Sist_c_o))
 
         print("\nDesplazamientos:\n{}".format(D_e_o))
         D_e_o.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
