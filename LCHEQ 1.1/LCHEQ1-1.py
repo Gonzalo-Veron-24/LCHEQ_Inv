@@ -56,7 +56,8 @@ while True:
 #Ancho= 36
 #Alto= 36
 # 10x10
-#E= 9860
+#E panel= 9860
+#E celdas= 894
 #idc12=0.19
 
 #L1= ancho= 173.3                              
@@ -73,7 +74,7 @@ while True:
 #Et: 606 MPa
 #λ: 0.5
 
-#Carga1= +33,71141565
+#Carga1= +33.71141565
 #Carga2= +34,08419166
 #Carga3= +28,49287563
 #Carga4= +34,57030922
@@ -267,3 +268,6 @@ else:                           #LADRILLO MACIZO
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()
+    print("Tensiones")
+    print(tensiones_m2[1][1][1][1])
+
