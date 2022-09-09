@@ -198,7 +198,7 @@ else:                           #LADRILLO MACIZO
         except ValueError:
             print("\n¡ERROR! Reingrese!")
 
-    E = 894
+    E = 9860
     Des = {}   
     Des_esp = {}
     ten_m1 = {}
