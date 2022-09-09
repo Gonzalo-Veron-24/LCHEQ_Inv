@@ -74,7 +74,6 @@ while True:
 #Et: 606 MPa
 #λ: 0.5
 
-#REVISAR LAS UNIDADES DE LAS CARGAS, DEBEN ESTAR EN N/mm2, parece que estan en Kg/cm2
 #Carga1= +33.71141565
 #Carga2= +34.08419166
 #Carga3= +28.49287563
