@@ -267,3 +267,4 @@ else:                           #LADRILLO MACIZO
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()
+
