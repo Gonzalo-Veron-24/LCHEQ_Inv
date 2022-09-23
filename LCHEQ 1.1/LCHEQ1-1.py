@@ -268,10 +268,7 @@ else:                           #LADRILLO MACIZO
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()
-<<<<<<< HEAD
-=======
     print("Tensiones")
     print(tensiones_m2[1][1][1][1])
 
->>>>>>> f8aa994085989323eaef650513879810f198eab0
 
