@@ -272,8 +272,6 @@ else:                           #LADRILLO MACIZO
 =======
     print("Tensiones")
     print(tensiones_m2[1][1][1][1])
-    #probando git
-    
 
 >>>>>>> f8aa994085989323eaef650513879810f198eab0
 
