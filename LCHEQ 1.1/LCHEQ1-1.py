@@ -273,4 +273,4 @@ else:                           #LADRILLO MACIZO
 
     #probando git
 #Hola Javier como estas? 
-
+#bien yb vos? namasté
