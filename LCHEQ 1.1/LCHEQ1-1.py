@@ -56,7 +56,8 @@ while True:
 #Ancho= 36
 #Alto= 36
 # 10x10
-#E= 9860
+#E panel= 9860
+#E celdas= 894
 #idc12=0.19
 
 #L1= ancho= 173.3                              
@@ -73,13 +74,13 @@ while True:
 #Et: 606 MPa
 #λ: 0.5
 
-#Carga1= +33,71141565
-#Carga2= +34,08419166
-#Carga3= +28,49287563
-#Carga4= +34,57030922
-#Carga5= +34,65797708
-#Carga6= +34,73208359
-#Carga7= +22,63870073
+#Carga1= +33.71141565 
+#Carga2= +34.08419166 
+#Carga3= +28.49287563
+#Carga4= +34.57030922
+#Carga5= +34.65797708
+#Carga6= +34.73208359
+#Carga7= +22.63870073
 
 #DefE1= 0.0008542475559706115
 #DefE2= 0.0008636937031978038
@@ -197,7 +198,7 @@ else:                           #LADRILLO MACIZO
         except ValueError:
             print("\n¡ERROR! Reingrese!")
 
-    E = 894
+    E = 9860
     Des = {}   
     Des_esp = {}
     ten_m1 = {}
@@ -267,4 +268,12 @@ else:                           #LADRILLO MACIZO
         D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
     H_Excel.save()
+<<<<<<< HEAD
+=======
+    print("Tensiones")
+    print(tensiones_m2[1][1][1][1])
+    #probando git
+    
+
+>>>>>>> f8aa994085989323eaef650513879810f198eab0
 
