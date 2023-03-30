@@ -12,7 +12,8 @@ import copy
 pd.options.mode.chained_assignment = None  # default='warn'
 print('¡Bienvenido! Por favor siga las instrucciones'.center(100),"\n","Universidad Nacional de Misiones (UNaM)".center(100),"\n","OBERÁ - MISIONES - ARGENTINA".center(100),"\n\n")
 CL=[-1,-1,1,-1,1,1,-1,1] #COORDENADAS LOCALES (SENTIDO ANTIHORARIO)
-#print("\n","Coordenadas Locales establecidas en sentido horario:".center(90),"\n\n","{}".center(90).format(CL[0]),"\n","{}".center(90).format(CL[1]),"\n","{}".center(90).format(CL[2]),"\n","{}".center(90).format(CL[3]),"\n\n")
+
+
                                 #INGRESO DE DATOS DEL ELEMENTO FINITO
 while True:
     print("\n","INGRESE LAS DIMENSIONS DEL OBJETO".center(100))
