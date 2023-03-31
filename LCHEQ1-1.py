@@ -39,16 +39,27 @@ while True:
     #Factor de ajuste incremental D_d_E[7]
     #Modulo traccion D_d_E[8]
     #Resistencia traccion D_d_E[9]
-    
-    print("\n\n","--------------- DATOS INGRESADOS: ---------------".center(100),"\n","Ancho(mm): {}".format(Ancho),"\n","Alto(mm): {}".format(Alto),"\n","Área(mm^2): {}".format(Area),"\n","Área del Elemento Finito: {}".format(AreaF),"\n","Cantidad de elementos en X: {}".format(Hx),"\n","Cantidad de elementos en Y: {}".format(Vy),"\n","Módulo Elástico (E1): {}".format(Datos_Ensayo[0],"\n","Módulo Elástico (E2): {}".format(Datos_Ensayo[1],"\n","Módulo Elástico (E3): {}".format(Datos_Ensayo[2],\
-                 "\n","Deformación Correlativa (idc12): {}".format(Datos_Ensayo[3],"\n","Deformación Correlativa (idc13): {}".format(Datos_Ensayo[4],"\n","Deformación Correlativa (idc32): {}".format(Datos_Ensayo[5],"\n","Factor de Ajuste Exponencial (C): {}".format(Datos_Ensayo[6]),"\n","Factor de Ajuste Exponencial (K): {}".format(Datos_Ensayo[7]),"\n")))))))
-    op=input("\n¿Los datos son correctos?\n1 - Continuar\n2 - Reingresar\n\n>>> ")
-    if op=="1":
-        print("\nContinuando con el programa...")
-        break
-    elif op=="2":
-        print("\n","-------------------- DATOS ELIMINADOS --------------------".center(100),"\n","-------------------- POR FAVOR REINGRESE LOS DATOS --------------------".center(100))
-        continue
+    print("""
+    --------------- DATOS INGRESADOS: ---------------
+    Ancho(mm): {}
+    Alto(mm): {}
+    Área(mm^2): {}
+    Área del Elemento Finito: {}
+    Cantidad de elementos en X: {}
+    Cantidad de elementos en Y: {}
+    Módulo Elástico (E1): {}
+    Módulo Elástico (E2): {}
+    Módulo Elástico (E3): {}
+    Deformación Correlativa (idc12): {}
+    Deformación Correlativa (idc13): {}
+    Deformación Correlativa (idc32): {}
+    Factor de Ajuste Exponencial (C): {}
+    Factor de Ajuste Exponencial (K): {}
+    """.format(Ancho, Alto, Area, AreaF, Hx, Vy, *Datos_Ensayo))
+    op=input("\n¿Los datos ingresados son correctos?\n1 - Continuar\n2 - Reingresar\n... ")
+    if op=="1": break
+    elif op=="2": print("\n","-------------------- DATOS ELIMINADOS --------------------".center(100))
+    else: print("\n¡OPCION NO VALIDA!\n")
 
 
 #Ancho= 36
