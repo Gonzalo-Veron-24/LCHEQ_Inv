@@ -26,25 +26,22 @@ while True:
     Hx=int(cf.validacion_float("\nIngrese la cantidad de elementos en X: "))
     Vy=int(cf.validacion_float("\nIngrese la cantidad de elementos en Y: "))
                                 #INGRESO DE DATOS DE ENSAYO
-    print("\n\n","INGRESE LOS DATOS DE ENSAYO Y FACTORES DE AJUSTE".center(100))
-    D_d_E=[]
-    for i in range(2):
-        for e in range(1,4):
-            if i==0:
-                D_d_E.append(cf.validacion_float("* Modulo Elástico (E{}): ".format(e)))
-            else:
-                if e==1 or e==2:
-                    D_d_E.append(cf.validacion_float('* Deformacion Correlativa, idc{}{}: '.format(1,e+1)))
-                else:
-                    D_d_E.append(cf.validacion_float('* Deformacion Correlativa, idc{}{}: '.format(e,e-1)))
-        print()
-    D_d_E.append(cf.validacion_float('\n* Valor promedio de ancho (L1): '))  #D_d_E[6]
-    D_d_E.append(cf.validacion_float('* Factor de Ajuste incremental (λ): ')) #D_d_E[7]
-    D_d_E.append(cf.validacion_float('* Modulo Tracción (Et): '))     #D_d_E[8]
-    D_d_E.append(cf.validacion_float('* Resistencia Tracción (Ft): '))     #D_d_E[9]
     
-    print("\n\n","--------------- DATOS INGRESADOS: ---------------".center(100),"\n","Ancho(mm): {}".format(Ancho),"\n","Alto(mm): {}".format(Alto),"\n","Área(mm^2): {}".format(Area),"\n","Área del Elemento Finito: {}".format(AreaF),"\n","Cantidad de elementos en X: {}".format(Hx),"\n","Cantidad de elementos en Y: {}".format(Vy),"\n","Módulo Elástico (E1): {}".format(D_d_E[0],"\n","Módulo Elástico (E2): {}".format(D_d_E[1],"\n","Módulo Elástico (E3): {}".format(D_d_E[2],\
-                 "\n","Deformación Correlativa (idc12): {}".format(D_d_E[3],"\n","Deformación Correlativa (idc13): {}".format(D_d_E[4],"\n","Deformación Correlativa (idc32): {}".format(D_d_E[5],"\n","Factor de Ajuste Exponencial (C): {}".format(D_d_E[6]),"\n","Factor de Ajuste Exponencial (K): {}".format(D_d_E[7]),"\n")))))))
+    Datos_Ensayo=[]
+    cf.ingreso_datos_ensayo(Datos_Ensayo)
+    #Modulo Elastico 1 Datos_Ensayo[0]
+    #Modulo Elastico 2 Datos_Ensayo[1]
+    #Modulo Elastico 3 Datos_Ensayo[2]
+    #Deformación Correlativa (idc12) Datos_Ensayo[3]
+    #Deformación Correlativa (idc13) Datos_Ensayo[4]
+    #Deformación Correlativa (idc13) Datos_Ensayo[5]
+    #Valor promedio de ancho L1 D_d_E[6]
+    #Factor de ajuste incremental D_d_E[7]
+    #Modulo traccion D_d_E[8]
+    #Resistencia traccion D_d_E[9]
+    
+    print("\n\n","--------------- DATOS INGRESADOS: ---------------".center(100),"\n","Ancho(mm): {}".format(Ancho),"\n","Alto(mm): {}".format(Alto),"\n","Área(mm^2): {}".format(Area),"\n","Área del Elemento Finito: {}".format(AreaF),"\n","Cantidad de elementos en X: {}".format(Hx),"\n","Cantidad de elementos en Y: {}".format(Vy),"\n","Módulo Elástico (E1): {}".format(Datos_Ensayo[0],"\n","Módulo Elástico (E2): {}".format(Datos_Ensayo[1],"\n","Módulo Elástico (E3): {}".format(Datos_Ensayo[2],\
+                 "\n","Deformación Correlativa (idc12): {}".format(Datos_Ensayo[3],"\n","Deformación Correlativa (idc13): {}".format(Datos_Ensayo[4],"\n","Deformación Correlativa (idc32): {}".format(Datos_Ensayo[5],"\n","Factor de Ajuste Exponencial (C): {}".format(Datos_Ensayo[6]),"\n","Factor de Ajuste Exponencial (K): {}".format(Datos_Ensayo[7]),"\n")))))))
     op=input("\n¿Los datos son correctos?\n1 - Continuar\n2 - Reingresar\n\n>>> ")
     if op=="1":
         print("\nContinuando con el programa...")
@@ -100,7 +97,7 @@ while True:
 #DespProm7= 0.20651935205286875
 
 L1=1
-D_d_E.append(L1)
+Datos_Ensayo.append(L1)
 
 while True: # SELECCIÓN DEL TIPO DE ESTRUCTURA
     print("\n¿Con qué tipo de estructura regional desea trabajar?".center(100),"\n1 - Ladrillo macizo\n2 - Ladrillo hueco\n\n")
@@ -117,19 +114,19 @@ if tipo:                        #LADRILLO HUECO
 else:                           #LADRILLO MACIZO
     #T=(D_d_E[7]/(D_d_E[9]/D_d_E[8]))*D_d_E[6]
     T=1
-    D_d_E.append(T)
+    Datos_Ensayo.append(T)
     
-    G12= float(D_d_E[0]/(2*(1+D_d_E[3])))
-    D_d_E.append(G12)
-    G13= float(D_d_E[0]/(2*(1+D_d_E[4])))
-    D_d_E.append(G13)
-    G23= float(D_d_E[1]/2/(1+D_d_E[5]))
-    D_d_E.append(G23)
+    G12= float(Datos_Ensayo[0]/(2*(1+Datos_Ensayo[3])))
+    Datos_Ensayo.append(G12)
+    G13= float(Datos_Ensayo[0]/(2*(1+Datos_Ensayo[4])))
+    Datos_Ensayo.append(G13)
+    G23= float(Datos_Ensayo[1]/2/(1+Datos_Ensayo[5]))
+    Datos_Ensayo.append(G23)
     
     print("\n\n","EL ALGORITMO COMENZARÁ A HACER LOS CÁLCULOS CORRESPONDIENTES","\n\n")
     for i in tqdm(range(4000)):
         print("", end=("\r"))
-    print(D_d_E)
+    print(Datos_Ensayo)
                                 # FUNCIONES DE FORMA
     Xi = Symbol("Xi")
     ita = Symbol("ita")
@@ -185,7 +182,7 @@ else:                           #LADRILLO MACIZO
     cf.B_valores(CL,B_numerico,Xi,ita)
     
                                 #MATRIZ D
-    D = cf.M_D(D_d_E)
+    D = cf.M_D(Datos_Ensayo)
                                 #MATRICES K
     K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,T,C_G_L)
     

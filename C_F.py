@@ -13,7 +13,21 @@ def validacion_float(ingreso):
             valor=float(valor)
             return valor
         except:
-            print("\n¡VALOR INGRESADO NO VALIDO!\n") 
+            print("\n¡VALOR INGRESADO NO VALIDO!\n")
+
+"Funcion para el ingreso de datos de ensayo"
+def ingreso_datos_ensayo(Array_Date):
+    print("\n\n","INGRESE LOS DATOS DE ENSAYO Y FACTORES DE AJUSTE".center(100))
+    temp_list = []
+    for i in range(2):
+        for e in range(1, 4):
+            if i == 0:
+                temp_list.append(validacion_float("* Modulo Elástico (E{}): ".format(e)))
+            else:
+                temp_list.append(validacion_float('* Deformacion Correlativa, idc{}{}: '.format(e, e - 1 if e == 3 else e + 1)))
+        print()
+    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): ')])
+    Array_Date.extend(temp_list)
 
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
