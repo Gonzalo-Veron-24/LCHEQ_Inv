@@ -17,28 +17,19 @@ CL=[-1,-1,1,-1,1,1,-1,1] #COORDENADAS LOCALES (SENTIDO ANTIHORARIO)
                                 #INGRESO DE DATOS DEL ELEMENTO FINITO
 while True:
     print("\n","INGRESE LAS DIMENSIONS DEL OBJETO".center(100))
-    Ancho=cf.validacion_float("* Ancho(mm): ")
-    Alto=cf.validacion_float("* Alto(mm): ")
-    Area=Alto*Ancho
-    print("\n","* Área(mm^2): {}".format(Area))
-    AreaF=4*Area    ####################### CONSULTAR #######################
-    
-    Hx=int(cf.validacion_float("\nIngrese la cantidad de elementos en X: "))
-    Vy=int(cf.validacion_float("\nIngrese la cantidad de elementos en Y: "))
-                                #INGRESO DE DATOS DE ENSAYO
-    
-    Datos_Ensayo=[]
-    cf.ingreso_datos_ensayo(Datos_Ensayo)
-    #Modulo Elastico 1 Datos_Ensayo[0]
-    #Modulo Elastico 2 Datos_Ensayo[1]
-    #Modulo Elastico 3 Datos_Ensayo[2]
-    #Deformación Correlativa (idc12) Datos_Ensayo[3]
-    #Deformación Correlativa (idc13) Datos_Ensayo[4]
-    #Deformación Correlativa (idc13) Datos_Ensayo[5]
-    #Valor promedio de ancho L1 D_d_E[6]
-    #Factor de ajuste incremental D_d_E[7]
-    #Modulo traccion D_d_E[8]
-    #Resistencia traccion D_d_E[9]
+    Ancho=cf.validacion_float("* Ancho(mm): ")                                   #Ancho= 36       | #Modulo Elastico 1 Datos_Ensayo[0]
+    Alto=cf.validacion_float("* Alto(mm): ")                                     #Alto= 36        | #Modulo Elastico 2 ...[1]
+    Area=Alto*Ancho                                                              #Hx = 10         | #Modulo Elastico 3 ...[2]
+    print("\n","* Área(mm^2): {}".format(Area))                                  #Vy = 10         | #Deformación Correlativa (idc12) ...[3]
+    AreaF=4*Area                                                                 #E panel= 9860   | #Deformación Correlativa (idc13) ...[4]
+    Hx=int(cf.validacion_float("\nIngrese la cantidad de elementos en X: "))     #E celdas= 894   | #Deformación Correlativa (idc13) ...[5]
+    Vy=int(cf.validacion_float("\nIngrese la cantidad de elementos en Y: "))     #idc12=0.19      | #Valor promedio de ancho L1 ...[6]
+                                #INGRESO DE DATOS DE ENSAYO                      #L1= ancho= 173.3| #Factor de ajuste incremental ...[7]
+    Datos_Ensayo=[]                                                              #n= Ft/Et        | #Modulo traccion ...[8]
+    cf.ingreso_datos_ensayo(Datos_Ensayo)                                        #λ=0.5           | #Resistencia traccion ...[9]
+                                                                                 #ft: 2.23 MPa    | #L1 ...[10]
+                                                                                 #Et: 606 MPa     | #Espesor Equivalente ...[11]
+                                                                                 #λ: 0.5          | #G12 [12], G13 [13], G23 [14]
     print("""
     --------------- DATOS INGRESADOS: ---------------
     Ancho(mm): {}
@@ -57,7 +48,8 @@ while True:
     Factor de Ajuste incremental (λ): {}
     Modulo Tracción (Et): {}
     Resistencia Tracción (Ft): {}
-    L1 = {}
+    L1: {}
+    Espesor equivalente (T): {}
     
     """.format(Ancho, Alto, Area, AreaF, Hx, Vy, *Datos_Ensayo))
     op=input("\n¿Los datos ingresados son correctos?\n1 - Continuar\n2 - Reingresar\n... ")
@@ -65,62 +57,14 @@ while True:
     elif op=="2": print("\n","-------------------- DATOS ELIMINADOS --------------------".center(100))
     else: print("\n¡OPCION NO VALIDA!\n")
 
-
-#Ancho= 36
-#Alto= 36
-# 10x10
-#E panel= 9860
-#E celdas= 894
-#idc12=0.19
-
-#L1= ancho= 173.3                              
-#n= Ft/Et
-#λ=0.5
-
-# T1= n*(L1**λ)
-# T2= λ(Ln*n)
-# T3= (λ/n)*L1
-# T4= (n/λ)*L1
-
-
-#ft: 2.23 MPa
-#Et: 606 MPa
-#λ: 0.5
-
-#Carga1= +33.71141565 
-#Carga2= +34.08419166 
-#Carga3= +28.49287563
-#Carga4= +34.57030922
-#Carga5= +34.65797708
-#Carga6= +34.73208359
-#Carga7= +22.63870073
-
-#DefE1= 0.0008542475559706115
-#DefE2= 0.0008636937031978038
-#DefE3= 0.0007220097079934437
-#DefE4= 0.0008760119262548176
-#DefE5= 0.0008782334305642091
-#DefE6= 0.0008801112901505955
-#DefE7= 0.0005736648668135243
-
-#DespProm1= 0.30752912014942013
-#DespProm2= 0.31092973315120936
-#DespProm3= 0.2599234948776397
-#DespProm4= 0.31536429345173433
-#DespProm5= 0.3161640350031153
-#DespProm6= 0.3168400644542144
-#DespProm7= 0.20651935205286875
-                        #LADRILLO MACIZO
-#T=(D_d_E[7]/(D_d_E[9]/D_d_E[8]))*D_d_E[6]
-T=1
-Datos_Ensayo.append(T)
-
-G12= float(Datos_Ensayo[0]/(2*(1+Datos_Ensayo[3])))
-Datos_Ensayo.append(G12)
-G13= float(Datos_Ensayo[0]/(2*(1+Datos_Ensayo[4])))
-Datos_Ensayo.append(G13)
-G23= float(Datos_Ensayo[1]/2/(1+Datos_Ensayo[5]))
-Datos_Ensayo.append(G23)
+#---------------------------------DATOS UTILIZADOS-------------------------------------
+#Carga1= +33.71141565 | #DefE1= 0.0008542475559706115 | #DespProm1= 0.30752912014942013
+#Carga2= +34.08419166 | #DefE2= 0.0008636937031978038 | #DespProm2= 0.31092973315120936
+#Carga3= +28.49287563 | #DefE3= 0.0007220097079934437 | #DespProm3= 0.2599234948776397
+#Carga4= +34.57030922 | #DefE4= 0.0008760119262548176 | #DespProm4= 0.31536429345173433
+#Carga5= +34.65797708 | #DefE5= 0.0008782334305642091 | #DespProm5= 0.3161640350031153
+#Carga6= +34.73208359 | #DefE6= 0.0008801112901505955 | #DespProm6= 0.3168400644542144
+#Carga7= +22.63870073 | #DefE7= 0.0005736648668135243 | #DespProm7= 0.20651935205286875
 
 print("\n\n","EL ALGORITMO COMENZARÁ A HACER LOS CÁLCULOS CORRESPONDIENTES","\n\n")
 for i in tqdm(range(4000)):

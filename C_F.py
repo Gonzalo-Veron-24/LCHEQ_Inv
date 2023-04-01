@@ -26,8 +26,8 @@ def ingreso_datos_ensayo(Array_Date):
             else:
                 temp_list.append(validacion_float('* Deformacion Correlativa, idc{}{}: '.format(e, e - 1 if e == 3 else e + 1)))
         print()
-    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1])
-    Array_Date.extend(temp_list) #L1 = 1
+    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
+    Array_Date.extend(temp_list) #L1 = 1; T = 1; G12; G13; G23
 
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
