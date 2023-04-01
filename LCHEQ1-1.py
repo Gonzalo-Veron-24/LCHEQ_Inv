@@ -53,8 +53,12 @@ while True:
     Deformación Correlativa (idc12): {}
     Deformación Correlativa (idc13): {}
     Deformación Correlativa (idc32): {}
-    Factor de Ajuste Exponencial (C): {}
-    Factor de Ajuste Exponencial (K): {}
+    Valor promedio de ancho (L1): {}
+    Factor de Ajuste incremental (λ): {}
+    Modulo Tracción (Et): {}
+    Resistencia Tracción (Ft): {}
+    L1 = {}
+    
     """.format(Ancho, Alto, Area, AreaF, Hx, Vy, *Datos_Ensayo))
     op=input("\n¿Los datos ingresados son correctos?\n1 - Continuar\n2 - Reingresar\n... ")
     if op=="1": break
