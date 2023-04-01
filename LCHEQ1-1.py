@@ -4,7 +4,6 @@ from sympy import Symbol
 import openpyxl
 import datetime
 from sympy.core.facts import deduce_alpha_implications
-from tqdm.auto import tqdm
 import C_F as cf
 import os
 import copy
@@ -66,22 +65,17 @@ while True:
 #Carga6= +34.73208359 | #DefE6= 0.0008801112901505955 | #DespProm6= 0.3168400644542144
 #Carga7= +22.63870073 | #DefE7= 0.0005736648668135243 | #DespProm7= 0.20651935205286875
 
-print("\n\n","EL ALGORITMO COMENZARÁ A HACER LOS CÁLCULOS CORRESPONDIENTES","\n\n")
-for i in tqdm(range(4000)):
-    print("", end=("\r"))
-print(Datos_Ensayo)
+
                             # FUNCIONES DE FORMA
-Xi = Symbol("Xi")
-ita = Symbol("ita")
-N1,N2,N3,N4=(1/4)*(1-Xi)*(1-ita),(1/4)*(1+Xi)*(1-ita),(1/4)*(1+Xi)*(1+ita),(1/4)*(1-Xi)*(1+ita)
-Nodo_list=[N1,N2,N3,N4]
+Xi, ita = Symbol("Xi"), Symbol("ita")
+Nodo_list=[(1/4)*(1-Xi)*(1-ita),(1/4)*(1+Xi)*(1-ita),(1/4)*(1+Xi)*(1+ita),(1/4)*(1-Xi)*(1+ita)]
 
-T_de_M=datetime.datetime.now()
-T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)
+cf.barra_carga()
 
-H_Excel=pd.ExcelWriter(T_de_Mstr+".xlsx")
+H_Excel=pd.ExcelWriter(cf.fecha()) #creo el archivo excel
 H1 = pd.DataFrame(Nodo_list, index = ["1","2","3","4"])
-H1.to_excel(H_Excel, sheet_name='Funciones de Formas', index=False)                     
+H1.to_excel(H_Excel, sheet_name='Funciones de Formas', index=False) 
+H_Excel.close()
                             # DERIVADAS PARCIALES
 DNL=[] #Lista de derivadas de los nodos
 for i in Nodo_list:
@@ -127,7 +121,7 @@ cf.B_valores(CL,B_numerico,Xi,ita)
                             #MATRIZ D
 D = cf.M_D(Datos_Ensayo)
                             #MATRICES K
-K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,T,C_G_L)
+K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,Datos_Ensayo[11],C_G_L)
 
                             #ENSAMBLE
 M_E = cf.f_e_B(M_N,K,T_C_L)

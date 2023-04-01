@@ -3,6 +3,8 @@ import sympy
 import openpyxl
 import pandas as pd
 import datetime
+from tqdm.auto import tqdm
+
 
 
 '''Funcion para validar ingreso'''
@@ -29,6 +31,18 @@ def ingreso_datos_ensayo(Array_Date):
     temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
     Array_Date.extend(temp_list) #L1 = 1; T = 1; G12; G13; G23
 
+"Funcion de barra de carga"
+def barra_carga():
+    print("\n\n","CARGANDO...","\n\n")
+    for i in tqdm(range(4000)):
+        print("", end=("\r"))
+
+'''Funcion para añadir datos al excel'''
+def Agregar_datos_excel(Data_frame,nombre_hoja,H_Excel,Fec):
+    H_Excel = pd.ExcelWriter(Fec,mode='a')
+    Data_frame.to_excel(H_Excel, sheet_name=nombre_hoja, index=False)
+    H_Excel.close()
+
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
     M_elementos=[[x for x in range(1,x+1)]]
@@ -39,6 +53,12 @@ def M_E(x, y):
         M_elementos.append(l_c)
     M_elementos=np.array(M_elementos)
     return M_elementos
+
+'''Funcion de String fecha'''
+def fecha():
+    T_de_M=datetime.datetime.now()
+    T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)+".xlsx"
+    return T_de_Mstr
 
 '''Funcion de Matriz de Nodos'''
 def M_N(x, y):
