@@ -65,17 +65,16 @@ while True:
 #Carga6= +34.73208359 | #DefE6= 0.0008801112901505955 | #DespProm6= 0.3168400644542144
 #Carga7= +22.63870073 | #DefE7= 0.0005736648668135243 | #DespProm7= 0.20651935205286875
 
-
-                            # FUNCIONES DE FORMA
 Xi, ita = Symbol("Xi"), Symbol("ita")
-Nodo_list=[(1/4)*(1-Xi)*(1-ita),(1/4)*(1+Xi)*(1-ita),(1/4)*(1+Xi)*(1+ita),(1/4)*(1-Xi)*(1+ita)]
+Nodo_list=[(1/4)*(1-Xi)*(1-ita),(1/4)*(1+Xi)*(1-ita),(1/4)*(1+Xi)*(1+ita),(1/4)*(1-Xi)*(1+ita)] #Func. Forma
 
 cf.barra_carga()
-
-H_Excel=pd.ExcelWriter(cf.fecha()) #creo el archivo excel
+Fecha=cf.fecha()
+H_Excel=pd.ExcelWriter(Fecha) #creo el archivo excel
 H1 = pd.DataFrame(Nodo_list, index = ["1","2","3","4"])
 H1.to_excel(H_Excel, sheet_name='Funciones de Formas', index=False) 
 H_Excel.close()
+
                             # DERIVADAS PARCIALES
 DNL=[] #Lista de derivadas de los nodos
 for i in Nodo_list:
@@ -144,7 +143,7 @@ for i in range(Cant_C):
     Carga = cf.validacion_float("\nCarga (N): ")
 
     s_c = cf.S_C(Carga,M_N,T_C_L)
-    s_c.to_excel(H_Excel,sheet_name="Sist. Q={}".format(Carga))
+    cf.Agregar_datos_excel(s_c,"Sist. Q={}".format(Carga),H_Excel,Fecha)
     print("\nSistema de Cargas: \n{}".format(s_c))
 
     #Desplazamientos
@@ -163,11 +162,10 @@ for i in range(Cant_C):
                 Sist_c_o[0][e] = s_c[1][e] 
     
     print("\nSistema de Cargas ordenados por c_l: \n{}".format(Sist_c_o))
-    Sist_c_o.to_excel(H_Excel,sheet_name="Sist ord. Q={}".format(Carga))
+    cf.Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),H_Excel,Fecha)
 
     print("\nDesplazamientos:\n{}".format(D_e_o))
-    D_e_o.to_excel(H_Excel,sheet_name="Desplaz. Q={}".format(Carga))
-
+    cf.Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),H_Excel,Fecha)
 
     ##Deformacion especifica
     paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
@@ -181,11 +179,11 @@ for i in range(Cant_C):
 
     paso2 = D_e_o.copy()
     Des_esp[i+1] = paso2
-    Des_esp[i+1].to_excel(H_Excel,sheet_name="Desplaz_esp. Q={}".format(Carga))
+    cf.Agregar_datos_excel(Des_esp[i+1],"Desplaz_esp. Q={}".format(Carga),H_Excel,Fecha)
 
     ##METODO 1
     ten_m1[i+1] = (D_e_o*E)
-    ten_m1[i+1].to_excel(H_Excel,sheet_name="tensiones. Q={}".format(Carga))
+    cf.Agregar_datos_excel(ten_m1[i+1],"tensiones. Q={}".format(Carga),H_Excel,Fecha)
     
     c_p_e = cf.sep_por_elem(Sist_c_o,s_c,C_L)
     cargas_p_ele[i+1] = c_p_e
@@ -202,7 +200,6 @@ for i in range(Cant_C):
     #Deformacion especifica
     D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
     print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
-H_Excel.save()
 print("Tensiones")
 print(tensiones_m2[1][1][1][1])
 
