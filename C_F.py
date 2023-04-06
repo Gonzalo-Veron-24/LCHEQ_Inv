@@ -4,8 +4,7 @@ import openpyxl
 import pandas as pd
 import datetime
 from tqdm.auto import tqdm
-
-
+import copy
 
 '''Funcion para validar ingreso'''
 def validacion_float(ingreso):
@@ -16,6 +15,19 @@ def validacion_float(ingreso):
             return valor
         except:
             print("\n¡VALOR INGRESADO NO VALIDO!\n")
+
+#Funcion validar ingreso proxima
+def validar_dato(a,b,texto):
+    while True:
+        try:
+            valor = int(input(f"\nINGRESE {texto}: "))
+            if valor>=a and valor<=b:
+                break
+            else:
+                print(f"\n¡ERROR! INTERVALO VALIDO: [{texto}]\n")
+        except ValueError:
+            print(f"\n¡ERROR! EL VALOR DEBE SER ENTERO\n")
+    return valor
 
 "Funcion para el ingreso de datos de ensayo"
 def ingreso_datos_ensayo(Array_Date):
@@ -78,6 +90,15 @@ def T_C(x,y,M_El,M_No):
         for i in range(x):
             C_G_L[M_El[j][i]]=[[M_No[j][i],M_No[j][i+1],M_No[j+1][i+1],M_No[j+1][i]],[(2*(M_No[j][i])-1),(2*(M_No[j][i])),(2*(M_No[j][i+1])-1),(2*(M_No[j][i+1])),(2*(M_No[j+1][i+1])-1),(2*(M_No[j+1][i+1])),(2*(M_No[j+1][i])-1),(2*(M_No[j+1][i]))]]
     return C_G_L
+
+# Coordenadas Locales
+def coord_loc(c_g_l,d_gn):
+    c_l = []
+    for i in c_g_l.keys():
+        print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,c_g_l[i][0],c_g_l[i][1],d_gn[i][0],d_gn[i][1]))
+        for e in c_g_l[i][1]:
+            c_l.append(e)
+    return c_l
 
 '''Distancias generales'''
 def D_G(x,y,a,l):
@@ -227,13 +248,15 @@ def D_E(Despz, alto, cant_ey):
     return D_e
 
 
-def B_valores(cl, C_m_b, Xi, ita):
+def B_valores(cl, B, Xi, ita):
+    b_num = copy.deepcopy(B)
     contador = 0
     for i in range(4):
         for j in range(3):
             for h in range(8):
-                C_m_b[i+1][j][h] = (((C_m_b[i+1][j][h]).subs(Xi,cl[contador])).subs(ita,cl[contador+1])) 
-        contador+=2  
+                b_num[i+1][j][h] = (((b_num[i+1][j][h]).subs(Xi,cl[contador])).subs(ita,cl[contador+1])) 
+        contador+=2
+    return b_num  
 
 def sep_por_elem(x,x1,c_l):
     cargas = []

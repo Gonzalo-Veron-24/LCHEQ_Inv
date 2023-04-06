@@ -73,64 +73,33 @@ Fecha=cf.fecha()
 H_Excel=pd.ExcelWriter(Fecha) #creo el archivo excel
 H1 = pd.DataFrame(Nodo_list, index = ["1","2","3","4"])
 H1.to_excel(H_Excel, sheet_name='Funciones de Formas', index=False) 
-H_Excel.close()
+H_Excel.close() #a partir de esta sentencia trabajo con la funcion creada
 
-                            # DERIVADAS PARCIALES
-DNL=[] #Lista de derivadas de los nodos
-for i in Nodo_list:
-    dNdXi=i.diff(Xi)
-    dNdita=i.diff(ita)
-    DNL.append(dNdXi)
-    DNL.append(dNdita)
-                            # MATRIZ DE ELEMENTOS FINITOS
-M_E_F=cf.M_E(Hx,Vy)
+                            # DERIVADAS PARCIALES (Preguntar porque no se utiliza)
+# DNL=[] #Lista de derivadas de los nodos
+# for i in Nodo_list:
+#     dNdXi=i.diff(Xi)
+#     dNdita=i.diff(ita)
+#     DNL.append(dNdXi)
+#     DNL.append(dNdita)
 
-                            # MATRIZ DE NODOS
-M_N=cf.M_N(Hx,Vy)
-
-
-T_C_L=[x for x in range(1,(M_N.size*2)+1)]
-
-                            # TABLA DE CONECTIVIDAD
-C_G_L=cf.T_C(Hx,Vy,M_E_F,M_N)
-                            # DISTANCIAS GENERALES
-D_Generales=cf.D_G(Hx,Vy,Ancho,Alto)
-
-C_L = []
-for i in C_G_L.keys():
-    print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,C_G_L[i][0],C_G_L[i][1],D_Generales[i][0],D_Generales[i][1]))
-    for e in C_G_L[i][1]:
-        C_L.append(e)
-                            # TRANSFORMACIÓN ISOPARAMÉTRICA
-
-T_i=cf.T_I(Nodo_list,D_Generales,Xi,ita)
-                            #JACOBIANOS, INVERSAS Y DETERMINANTES
-j_i_d = cf.J_I_D(T_i)
-                            #MATRICES A
-A = cf.M_A(j_i_d)
-                            #MATRIZ G
-G = cf.M_G(Xi, ita)
-                            #MATRICE B Y Bt
-Bt = {}
+M_E_F=cf.M_E(Hx,Vy)                                     # | MATRIZ DE ELEMENTOS FINITOS
+M_N=cf.M_N(Hx,Vy)                                       # | MATRIZ DE NODOS
+T_C_L=[x for x in range(1,(M_N.size*2)+1)]                            
+C_G_L=cf.T_C(Hx,Vy,M_E_F,M_N)                           # | TABLA DE CONECTIVIDAD
+D_Generales=cf.D_G(Hx,Vy,Ancho,Alto)                    # | DISTANCIAS GENERALES
+C_L = cf.coord_loc(C_G_L,D_Generales)                   # | Coordenadas Locales
+T_i=cf.T_I(Nodo_list,D_Generales,Xi,ita)                # | TRANSFORMACIÓN ISOPARAMÉTRICA    
+j_i_d = cf.J_I_D(T_i)                                   # | JACOBIANOS, INVERSAS Y DETERMINANTES          
+A = cf.M_A(j_i_d)                                       # | MATRICES A
+G = cf.M_G(Xi, ita)                                     # | MATRIZ G     
+Bt = {}                                                 # | MATRICE B Y Bt
 B = cf.M_B(A,G,Bt)
-
-B_numerico = copy.deepcopy(B) ##B con sus respectivos valores
-cf.B_valores(CL,B_numerico,Xi,ita)
-
-                            #MATRIZ D
-D = cf.M_D(Datos_Ensayo)
-                            #MATRICES K
-K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,Datos_Ensayo[11],C_G_L)
-
-                            #ENSAMBLE
-M_E = cf.f_e_B(M_N,K,T_C_L)
-
-while True:
-    try:
-        Cant_C = int(input("\nIngrese la cantidad de ensayos a analizar: "))
-        break
-    except ValueError:
-        print("\n¡ERROR! Reingrese!")
+B_numerico = cf.B_valores(CL,B,Xi,ita)                  # | B con sus respectivos valores
+D = cf.M_D(Datos_Ensayo)                                # | MATRIZ D
+K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,Datos_Ensayo[11],C_G_L)  # | MATRICES K
+M_E = cf.f_e_B(M_N,K,T_C_L)                             # | ENSAMBLE
+Cant_C = cf.validar_dato(1,10,"CANTIDAD DE ENSAYOS")    # | Cantidad de ensayos
 
 E = 9860
 Des = {}   
@@ -200,7 +169,6 @@ for i in range(Cant_C):
     #Deformacion especifica
     D_especifica = cf.D_E(Desplazamientos, Alto, Vy)
     print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+
 print("Tensiones")
 print(tensiones_m2[1][1][1][1])
-
-
