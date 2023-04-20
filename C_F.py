@@ -295,6 +295,7 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
     M_E_ni = np.linalg.inv(M_E_n)
 
     Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=t_c_l)
+    print(f"Desplazamientos sin ordenar Q{Carga}: \n{Desplazamientos}")
 
     D_e_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
     Sist_c_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
@@ -310,6 +311,7 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
 
     paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
     Dat_calc['Desplazamientos'][i+1] = paso
+    print(f"Desplazamientos ordenados Q{Carga}: \n{Dat_calc['Desplazamientos'][i+1]}")
 
     for h in range(1,(Desplazamientos.index[-1])+1):
         if h%2==0: 
