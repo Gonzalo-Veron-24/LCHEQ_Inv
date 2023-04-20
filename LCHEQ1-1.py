@@ -2,11 +2,8 @@ import numpy as np
 import pandas as pd
 from sympy import Symbol
 import openpyxl
-import datetime
 from sympy.core.facts import deduce_alpha_implications
 import C_F as cf
-import os
-import copy
 
 
 def main():
