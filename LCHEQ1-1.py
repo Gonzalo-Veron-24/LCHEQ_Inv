@@ -15,10 +15,10 @@ def main():
                                     #INGRESO DE DATOS DEL ELEMENTO FINITO
     while True:
         print("\n","INGRESE LAS DIMENSIONS DEL OBJETO".center(100))
-        Ancho=cf.validacion_float("* Ancho(mm): ")                                   #Ancho= 36       | #Modulo Elastico 1 Datos_Ensayo[0]
-        Alto=cf.validacion_float("* Alto(mm): ")                                     #Alto= 36        | #Modulo Elastico 2 ...[1]
-        Area=Alto*Ancho                                                              #Hx = 10         | #Modulo Elastico 3 ...[2]
-        print("\n","* Área(mm^2): {}".format(Area))                                  #Vy = 10         | #Deformación Correlativa (idc12) ...[3]
+        Ancho=cf.validacion_float("* Ancho(mm): ")                                   #Ancho= 180       | #Modulo Elastico 1 Datos_Ensayo[0]
+        Alto=cf.validacion_float("* Alto(mm): ")                                     #Alto= 360        | #Modulo Elastico 2 ...[1]
+        Area=Alto*Ancho                                                              #Hx = 18         | #Modulo Elastico 3 ...[2]
+        print("\n","* Área(mm^2): {}".format(Area))                                  #Vy = 36         | #Deformación Correlativa (idc12) ...[3]
         AreaF=4*Area                                                                 #E panel= 9860   | #Deformación Correlativa (idc13) ...[4]
         Hx=int(cf.validacion_float("\nIngrese la cantidad de elementos en X: "))     #E celdas= 894   | #Deformación Correlativa (idc13) ...[5]
         Vy=int(cf.validacion_float("\nIngrese la cantidad de elementos en Y: "))     #idc12=0.19      | #Valor promedio de ancho L1 ...[6]
