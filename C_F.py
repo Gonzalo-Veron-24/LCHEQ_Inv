@@ -285,3 +285,54 @@ def tens_m2(cx,cy,d,b_n,carg_pe):
 
 def Tn(d,b,dz):
     pass
+
+def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,coord_locales,alto,ancho,datos_ensayo,hx,vy,d,b_num):
+    Carga = validacion_float("\nCarga (N): ")
+    s_c = S_C(Carga,matriz_nodos,t_c_l)
+    Agregar_datos_excel(s_c,"Sist. Q={}".format(Carga),h_excel,fecha)
+
+    M_E_n = np.array(matriz_ensablada)
+    M_E_ni = np.linalg.inv(M_E_n)
+
+    Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=t_c_l)
+
+    D_e_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
+    Sist_c_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
+
+    for j in Desplazamientos.index:
+        for e in D_e_o.index:
+            if j == e:
+                D_e_o[0][e] = Desplazamientos[0][e]
+                Sist_c_o[0][e] = s_c[1][e] 
+
+    Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
+    Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
+
+    paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
+    Dat_calc['Desplazamientos'][i+1] = paso
+
+    for h in range(1,(Desplazamientos.index[-1])+1):
+        if h%2==0: 
+            (D_e_o[0][h])/=alto
+        else:
+            (D_e_o[0][h])/=ancho
+
+    paso2 = D_e_o.copy()
+    Dat_calc['Desplazamientos_esp'][i+1] = paso2
+    Agregar_datos_excel(Dat_calc['Desplazamientos_esp'][i+1],"Desplaz_esp. Q={}".format(Carga),h_excel,fecha)
+
+    Dat_calc['tensiones_metodo1'][i+1] = paso2 = (D_e_o*datos_ensayo[0])
+    Agregar_datos_excel(Dat_calc['tensiones_metodo1'][i+1],"tensiones. Q={}".format(Carga),h_excel,fecha)
+
+    c_p_e = sep_por_elem(Sist_c_o,s_c,coord_locales)
+    Dat_calc['cargas_por_elemento'][i+1] = c_p_e
+
+    Dat_calc['tensiones_metodo2'][i+1] = tens_m2(hx,vy,d,b_num,c_p_e) 
+
+    D_especifica = D_E(Desplazamientos, alto, vy)
+    print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+
+    '''tensiones_m2 es un diccionario que como clave tiene el numero de todos los elementos
+    ej: un valor es 1, el otro 2 y asi hasta 100 que en este caso es nuestro ultimo elemento.
+    Cada uno de esas claves tiene otro diccionario como valor. Dicho diccionario contiene 4 pares
+    clave-valor, las claves son 1,2,3,4 (nodos) y como valor contienen una lista con las 3 tensiones'''
