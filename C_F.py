@@ -325,16 +325,17 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
 
     Dat_calc['tensiones_metodo1'][i+1] = paso2 = (D_e_o*datos_ensayo[0])
     Agregar_datos_excel(Dat_calc['tensiones_metodo1'][i+1],"tensiones. Q={}".format(Carga),h_excel,fecha)
+    print(f"Tensiones Q{Carga}: \n{Dat_calc['tensiones_metodo1'][i+1]}")
 
     c_p_e = sep_por_elem(Sist_c_o,s_c,coord_locales)
     Dat_calc['cargas_por_elemento'][i+1] = c_p_e
 
-    Dat_calc['tensiones_metodo2'][i+1] = tens_m2(hx,vy,d,b_num,c_p_e) 
+    # Dat_calc['tensiones_metodo2'][i+1] = tens_m2(hx,vy,d,b_num,c_p_e) 
 
     D_especifica = D_E(Desplazamientos, alto, vy)
     print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
 
-    '''tensiones_m2 es un diccionario que como clave tiene el numero de todos los elementos
-    ej: un valor es 1, el otro 2 y asi hasta 100 que en este caso es nuestro ultimo elemento.
-    Cada uno de esas claves tiene otro diccionario como valor. Dicho diccionario contiene 4 pares
-    clave-valor, las claves son 1,2,3,4 (nodos) y como valor contienen una lista con las 3 tensiones'''
+    # '''tensiones_m2 es un diccionario que como clave tiene el numero de todos los elementos
+    # ej: un valor es 1, el otro 2 y asi hasta 100 que en este caso es nuestro ultimo elemento.
+    # Cada uno de esas claves tiene otro diccionario como valor. Dicho diccionario contiene 4 pares
+    # clave-valor, las claves son 1,2,3,4 (nodos) y como valor contienen una lista con las 3 tensiones'''
