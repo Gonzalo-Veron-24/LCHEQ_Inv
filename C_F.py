@@ -295,7 +295,7 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
     M_E_ni = np.linalg.inv(M_E_n)
 
     Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=t_c_l)
-    print(f"Desplazamientos sin ordenar Q{Carga}: \n{Desplazamientos}")
+    print(f"Desplazamientos sin ordenar Q {Carga}: \n{Desplazamientos}")
 
     D_e_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
     Sist_c_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
@@ -311,7 +311,7 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
 
     paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
     Dat_calc['Desplazamientos'][i+1] = paso
-    print(f"Desplazamientos ordenados Q{Carga}: \n{Dat_calc['Desplazamientos'][i+1]}")
+    print(f"Desplazamientos ordenados Q {Carga}: \n{Dat_calc['Desplazamientos'][i+1]}")
 
     for h in range(1,(Desplazamientos.index[-1])+1):
         if h%2==0: 
@@ -325,7 +325,7 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
 
     Dat_calc['tensiones_metodo1'][i+1] = paso2 = (D_e_o*datos_ensayo[0])
     Agregar_datos_excel(Dat_calc['tensiones_metodo1'][i+1],"tensiones. Q={}".format(Carga),h_excel,fecha)
-    print(f"Tensiones Q{Carga}: \n{Dat_calc['tensiones_metodo1'][i+1]}")
+    print(f"Tensiones Q {Carga}: \n{Dat_calc['tensiones_metodo1'][i+1]}")
 
     c_p_e = sep_por_elem(Sist_c_o,s_c,coord_locales)
     Dat_calc['cargas_por_elemento'][i+1] = c_p_e
