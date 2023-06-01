@@ -97,7 +97,8 @@ def main():
     B_numerico = cf.B_valores(CL,B,Xi,ita)                  # | B con sus respectivos valores
     D = cf.M_D(Datos_Ensayo)                                # | MATRIZ D
     K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,Datos_Ensayo[11],C_G_L)  # | MATRICES K
-    M_E = cf.f_e_B(M_N,K,T_C_L)                             # | ENSAMBLE
+    print(K[1])
+    M_E = cf.f_e_B(M_N,K,T_C_L,H_Excel,Fecha)                             # | ENSAMBLE
     Cant_C = cf.validar_dato(1,10,"CANTIDAD DE ENSAYOS")    # | Cantidad de ensayos
     Datos_calculados = {'Desplazamientos':{},'Desplazamientos_esp':{},'tensiones_metodo1':{},'tensiones_metodo2':{},'cargas_por_elemento':{}}
 

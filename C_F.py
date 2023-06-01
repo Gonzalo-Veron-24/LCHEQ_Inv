@@ -194,11 +194,12 @@ def f_e_A(M1,M2):
                     M2[e][i]+=M1[e][i]
 
 '''Funcion de ensamble B'''
-def f_e_B(M_N,K,T_C_L):
+def f_e_B(M_N,K,T_C_L,h_excel,fecha):
     Matriz_E=pd.DataFrame(list(zip()),T_C_L,T_C_L)
     Matriz_E=Matriz_E.fillna(0)
     for e in K.keys():
         f_e_A(K[e],Matriz_E)
+    Agregar_datos_excel(Matriz_E,"Matriz Ensamblada",h_excel,fecha)
     return Matriz_E
 
 '''Funcion de armado'''
