@@ -287,7 +287,7 @@ def tens_m2(cx,cy,d,b_n,carg_pe):
 def Tn(d,b,dz):
     pass
 
-def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,coord_locales,alto,ancho,datos_ensayo,hx,vy,d,b_num):
+def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,coordenadas_locales,alto,ancho,datos_ensayo,hx,vy,d,b_num):
     Carga = validacion_float("\nCarga (N): ")
     s_c = S_C(Carga,matriz_nodos,t_c_l)
     Agregar_datos_excel(s_c,"Sist. Q={}".format(Carga),h_excel,fecha)
@@ -298,8 +298,8 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
     Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=t_c_l)
     print(f"Desplazamientos sin ordenar Q {Carga}: \n{Desplazamientos}")
 
-    D_e_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
-    Sist_c_o = pd.DataFrame([0.0 for i in range(len(coord_locales))],index=coord_locales)
+    D_e_o = pd.DataFrame([0.0 for i in range(len(coordenadas_locales))],index=coordenadas_locales)
+    Sist_c_o = pd.DataFrame([0.0 for i in range(len(coordenadas_locales))],index=coordenadas_locales)
 
     for j in Desplazamientos.index:
         for e in D_e_o.index:
@@ -324,11 +324,11 @@ def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,c
     Dat_calc['Desplazamientos_esp'][i+1] = paso2
     Agregar_datos_excel(Dat_calc['Desplazamientos_esp'][i+1],"Desplaz_esp. Q={}".format(Carga),h_excel,fecha)
 
-    Dat_calc['tensiones_metodo1'][i+1] = paso2 = (D_e_o*datos_ensayo[0])
+    Dat_calc['tensiones_metodo1'][i+1] = (D_e_o*datos_ensayo[0])
     Agregar_datos_excel(Dat_calc['tensiones_metodo1'][i+1],"tensiones. Q={}".format(Carga),h_excel,fecha)
     print(f"Tensiones Q {Carga}: \n{Dat_calc['tensiones_metodo1'][i+1]}")
 
-    c_p_e = sep_por_elem(Sist_c_o,s_c,coord_locales)
+    c_p_e = sep_por_elem(Sist_c_o,s_c,coordenadas_locales)
     Dat_calc['cargas_por_elemento'][i+1] = c_p_e
 
     # Dat_calc['tensiones_metodo2'][i+1] = tens_m2(hx,vy,d,b_num,c_p_e) 
