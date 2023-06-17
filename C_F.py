@@ -3,7 +3,8 @@ import sympy
 import openpyxl
 import pandas as pd
 import datetime
-
+from tqdm.auto import tqdm
+import copy
 
 '''Funcion para validar ingreso'''
 def validacion_float(ingreso):
@@ -14,6 +15,19 @@ def validacion_float(ingreso):
             return valor
         except:
             print("\n¡VALOR INGRESADO NO VALIDO!\n")
+
+#Funcion validar ingreso proxima
+def validar_dato(a,b,texto):
+    while True:
+        try:
+            valor = int(input(f"\nINGRESE {texto}: "))
+            if valor>=a and valor<=b:
+                break
+            else:
+                print(f"\n¡ERROR! INTERVALO VALIDO: [{texto}]\n")
+        except ValueError:
+            print(f"\n¡ERROR! EL VALOR DEBE SER ENTERO\n")
+    return valor
 
 "Funcion para el ingreso de datos de ensayo"
 def ingreso_datos_ensayo(Array_Date):
@@ -26,8 +40,20 @@ def ingreso_datos_ensayo(Array_Date):
             else:
                 temp_list.append(validacion_float('* Deformacion Correlativa, idc{}{}: '.format(e, e - 1 if e == 3 else e + 1)))
         print()
-    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1])
-    Array_Date.extend(temp_list) #L1 = 1
+    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
+    Array_Date.extend(temp_list) #L1 = 1; T = 1; G12; G13; G23
+
+"Funcion de barra de carga"
+def barra_carga():
+    print("\n\n","CARGANDO...","\n\n")
+    for i in tqdm(range(4000)):
+        print("", end=("\r"))
+
+'''Funcion para añadir datos al excel'''
+def Agregar_datos_excel(Data_frame,nombre_hoja,H_Excel,Fec):
+    H_Excel = pd.ExcelWriter(Fec,mode='a')
+    Data_frame.to_excel(H_Excel, sheet_name=nombre_hoja, index=False)
+    H_Excel.close()
 
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
@@ -39,6 +65,12 @@ def M_E(x, y):
         M_elementos.append(l_c)
     M_elementos=np.array(M_elementos)
     return M_elementos
+
+'''Funcion de String fecha'''
+def fecha():
+    T_de_M=datetime.datetime.now()
+    T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)+".xlsx"
+    return T_de_Mstr
 
 '''Funcion de Matriz de Nodos'''
 def M_N(x, y):
@@ -58,6 +90,15 @@ def T_C(x,y,M_El,M_No):
         for i in range(x):
             C_G_L[M_El[j][i]]=[[M_No[j][i],M_No[j][i+1],M_No[j+1][i+1],M_No[j+1][i]],[(2*(M_No[j][i])-1),(2*(M_No[j][i])),(2*(M_No[j][i+1])-1),(2*(M_No[j][i+1])),(2*(M_No[j+1][i+1])-1),(2*(M_No[j+1][i+1])),(2*(M_No[j+1][i])-1),(2*(M_No[j+1][i]))]]
     return C_G_L
+
+# Coordenadas Locales
+def coord_loc(c_g_l,d_gn):
+    c_l = []
+    for i in c_g_l.keys():
+        print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,c_g_l[i][0],c_g_l[i][1],d_gn[i][0],d_gn[i][1]))
+        for e in c_g_l[i][1]:
+            c_l.append(e)
+    return c_l
 
 '''Distancias generales'''
 def D_G(x,y,a,l):
@@ -153,11 +194,12 @@ def f_e_A(M1,M2):
                     M2[e][i]+=M1[e][i]
 
 '''Funcion de ensamble B'''
-def f_e_B(M_N,K,T_C_L):
+def f_e_B(M_N,K,T_C_L,h_excel,fecha):
     Matriz_E=pd.DataFrame(list(zip()),T_C_L,T_C_L)
     Matriz_E=Matriz_E.fillna(0)
     for e in K.keys():
         f_e_A(K[e],Matriz_E)
+    Agregar_datos_excel(Matriz_E,"Matriz Ensamblada",h_excel,fecha)
     return Matriz_E
 
 '''Funcion de armado'''
@@ -207,13 +249,15 @@ def D_E(Despz, alto, cant_ey):
     return D_e
 
 
-def B_valores(cl, C_m_b, Xi, ita):
+def B_valores(cl, B, Xi, ita):
+    b_num = copy.deepcopy(B)
     contador = 0
     for i in range(4):
         for j in range(3):
             for h in range(8):
-                C_m_b[i+1][j][h] = (((C_m_b[i+1][j][h]).subs(Xi,cl[contador])).subs(ita,cl[contador+1])) 
-        contador+=2  
+                b_num[i+1][j][h] = (((b_num[i+1][j][h]).subs(Xi,cl[contador])).subs(ita,cl[contador+1])) 
+        contador+=2
+    return b_num  
 
 def sep_por_elem(x,x1,c_l):
     cargas = []
@@ -242,3 +286,57 @@ def tens_m2(cx,cy,d,b_n,carg_pe):
 
 def Tn(d,b,dz):
     pass
+
+def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,coordenadas_locales,alto,ancho,datos_ensayo,hx,vy,d,b_num):
+    Carga = validacion_float("\nCarga (N): ")
+    s_c = S_C(Carga,matriz_nodos,t_c_l)
+    Agregar_datos_excel(s_c,"Sist. Q={}".format(Carga),h_excel,fecha)
+
+    M_E_n = np.array(matriz_ensablada)
+    M_E_ni = np.linalg.inv(M_E_n)
+
+    Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=t_c_l)
+    print(f"Desplazamientos sin ordenar Q {Carga}: \n{Desplazamientos}")
+
+    D_e_o = pd.DataFrame([0.0 for i in range(len(coordenadas_locales))],index=coordenadas_locales)
+    Sist_c_o = pd.DataFrame([0.0 for i in range(len(coordenadas_locales))],index=coordenadas_locales)
+
+    for j in Desplazamientos.index:
+        for e in D_e_o.index:
+            if j == e:
+                D_e_o[0][e] = Desplazamientos[0][e]
+                Sist_c_o[0][e] = s_c[1][e] 
+
+    Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
+    Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
+
+    paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
+    Dat_calc['Desplazamientos'][i+1] = paso
+    print(f"Desplazamientos ordenados Q {Carga}: \n{Dat_calc['Desplazamientos'][i+1]}")
+
+    for h in range(1,(Desplazamientos.index[-1])+1):
+        if h%2==0: 
+            (D_e_o[0][h])/=alto
+        else:
+            (D_e_o[0][h])/=ancho
+
+    paso2 = D_e_o.copy()
+    Dat_calc['Desplazamientos_esp'][i+1] = paso2
+    Agregar_datos_excel(Dat_calc['Desplazamientos_esp'][i+1],"Desplaz_esp. Q={}".format(Carga),h_excel,fecha)
+
+    Dat_calc['tensiones_metodo1'][i+1] = (D_e_o*datos_ensayo[0])
+    Agregar_datos_excel(Dat_calc['tensiones_metodo1'][i+1],"tensiones. Q={}".format(Carga),h_excel,fecha)
+    print(f"Tensiones Q {Carga}: \n{Dat_calc['tensiones_metodo1'][i+1]}")
+
+    c_p_e = sep_por_elem(Sist_c_o,s_c,coordenadas_locales)
+    Dat_calc['cargas_por_elemento'][i+1] = c_p_e
+
+    # Dat_calc['tensiones_metodo2'][i+1] = tens_m2(hx,vy,d,b_num,c_p_e) 
+
+    D_especifica = D_E(Desplazamientos, alto, vy)
+    print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+
+    # '''tensiones_m2 es un diccionario que como clave tiene el numero de todos los elementos
+    # ej: un valor es 1, el otro 2 y asi hasta 100 que en este caso es nuestro ultimo elemento.
+    # Cada uno de esas claves tiene otro diccionario como valor. Dicho diccionario contiene 4 pares
+    # clave-valor, las claves son 1,2,3,4 (nodos) y como valor contienen una lista con las 3 tensiones'''
