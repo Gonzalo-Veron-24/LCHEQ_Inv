@@ -272,7 +272,7 @@ def sep_por_elem(desplz_ord,desplz,c_l):
             c = 0
     return cargas
 
-def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones):
+def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones,c_g_l):
     cant_recor = cx*cy ##cantidad de elementos
     for i in range(cant_recor):
         dicc_de_nodos_ten = {}
@@ -282,8 +282,8 @@ def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones):
             db = np.dot(d,b_n[j]) #Multiplicación matriz DxB1
             tens_calculadas = np.dot(db,cargas_transf) #tensiones de un nodo
             deform_calculadas = np.dot(b_n[j],cargas_transf)
-            dicc_de_nodos_ten[j] = tens_calculadas
-            dicc_de_nodos_def[j] = deform_calculadas
+            dicc_de_nodos_ten[c_g_l[i+1][0][j-1]] = tens_calculadas
+            dicc_de_nodos_def[c_g_l[i+1][0][j-1]] = deform_calculadas
         dic_tensiones[i+1] = dicc_de_nodos_ten
         dic_deformaciones[i+1] = dicc_de_nodos_def
 
@@ -299,6 +299,7 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     
     dic_despl[f"{Carga}"] = D_e_o
     dic_sc[f"{Carga}"] = Sist_c_o
+    print(Sist_c_o)
 
     Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
     Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)

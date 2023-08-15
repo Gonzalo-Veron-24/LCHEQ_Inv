@@ -86,6 +86,7 @@ def main():
     M_N=cf.M_N(Hx,Vy)                                       # | MATRIZ DE NODOS
     T_C_L=[x for x in range(1,(M_N.size*2)+1)]                            
     C_G_L=cf.T_C(Hx,Vy,M_E_F,M_N)                           # | TABLA DE CONECTIVIDAD
+    print(C_G_L)
     D_Generales=cf.D_G(Hx,Vy,Ancho,Alto)                    # | DISTANCIAS GENERALES
     C_L = cf.coord_loc(C_G_L,D_Generales)                   # | Coordenadas Locales
     T_i=cf.T_I(Nodo_list,D_Generales,Xi,ita)                # | TRANSFORMACIÓN ISOPARAMÉTRICA  
@@ -125,25 +126,22 @@ def main():
         corrimiento_x_elem = cf.sep_por_elem(dict_desplazamientos[f"{Carga}"],Desplazamientos,C_L)
         
         #Calculamos las tensiones y deformaciones y las guardamos en un diccionario
-        cf.tens_deformaciones(Hx,Vy,D,B_numerico,corrimiento_x_elem,dic_tensiones,dic_deformaciones)
+        cf.tens_deformaciones(Hx,Vy,D,B_numerico,corrimiento_x_elem,dic_tensiones,dic_deformaciones,C_G_L)
 
         #Calculamos la deformacion especifica
         D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
 
 
-    print("\nTensiones Elemento (Inferior) N°1;9;18 (NODO N°1):\n")
-    print(f"Tension X:\n Elemento N°1->{dic_tensiones[1][1][0]}\tElemento N°9->{dic_tensiones[9][1][0]}\tElemento N°18->{dic_tensiones[18][1][0]}") 
-    print(f"Tension Y:\n Elemento N°1->{dic_tensiones[1][1][1]}\tElemento N°9->{dic_tensiones[9][1][1]}\tElemento N°18->{dic_tensiones[18][1][1]}") 
-    print(f"Tension X-Y:\n Elemento N°1->{dic_tensiones[1][1][2]}\tElemento N°9->{dic_tensiones[9][1][2]}\tElemento N°18->{dic_tensiones[18][1][2]}")
+    print("\nTensiones Elemento (Inferior) N°1 (NODO N°3)--:\n")
+    print(f"Tension X:\n Elemento N°1->{dic_tensiones[1][13][0]}\tElemento N°9->{dic_tensiones[9][21][0]}") 
+    print(f"Tension Y:\n Elemento N°1->{dic_tensiones[1][13][1]}\tElemento N°9->{dic_tensiones[9][21][1]}") 
+    print(f"Tension X-Y:\n Elemento N°1->{dic_tensiones[1][13][2]}\tElemento N°9->{dic_tensiones[9][21][2]}")
+    
+    
+    print(f"Tension X:\n Elemento N°11->{dic_tensiones[11][13][0]}\tElemento N°19->{dic_tensiones[19][21][0]}") 
+    print(f"Tension Y:\n Elemento N°11->{dic_tensiones[11][13][1]}\tElemento N°19->{dic_tensiones[19][21][1]}") 
+    print(f"Tension X-Y:\n Elemento N°11->{dic_tensiones[11][13][2]}\tElemento N°19->{dic_tensiones[19][21][2]}")
 
-    print("\nTensiones Elemento (Medio) N°306;315;324 (NODO N°1):\n")
-    print(f"Tension X:\n Elemento N°306->{dic_tensiones[306][1][0]}\tElemento N°315->{dic_tensiones[315][1][0]}\tElemento N°324->{dic_tensiones[324][1][0]}")
-    print(f"Tension Y:\n Elemento N°306->{dic_tensiones[306][1][1]}\tElemento N°315->{dic_tensiones[315][1][1]}\tElemento N°324->{dic_tensiones[324][1][1]}")
-    print(f"Tension X-Y:\n Elemento N°306->{dic_tensiones[306][1][2]}\tElemento N°315->{dic_tensiones[315][1][2]}\tElemento N°324->{dic_tensiones[324][1][2]}")
 
-    print("\nTensiones Elemento (Superior) N°630;639;648 (NODO N°1):\n")
-    print(f"Tension X:\n Elemento N°630->{dic_tensiones[630][1][0]}\tElemento N°639->{dic_tensiones[639][1][0]}\tElemento N°648->{dic_tensiones[648][1][0]}")
-    print(f"Tension Y:\n Elemento N°630->{dic_tensiones[630][1][1]}\tElemento N°639->{dic_tensiones[639][1][1]}\tElemento N°648->{dic_tensiones[648][1][1]}")
-    print(f"Tension X-Y:\n Elemento N°630->{dic_tensiones[630][1][2]}\tElemento N°639->{dic_tensiones[639][1][2]}\tElemento N°648->{dic_tensiones[648][1][2]}")
 main()
