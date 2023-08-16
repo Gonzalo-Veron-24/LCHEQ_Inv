@@ -4,7 +4,7 @@ import openpyxl
 import pandas as pd
 import datetime
 from tqdm.auto import tqdm
-import copy
+import copy 
 
 '''Funcion para validar ingreso'''
 def validacion_float(ingreso):
@@ -69,7 +69,7 @@ def M_E(x, y):
 '''Funcion de String fecha'''
 def fecha():
     T_de_M=datetime.datetime.now()
-    T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)+".xlsx"
+    T_de_Mstr="./LCHEQ_Inv/"+str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)+".xlsx"
     return T_de_Mstr
 
 '''Funcion de Matriz de Nodos'''
@@ -303,6 +303,16 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
 
     Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
     Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
+
+def tensiones_deformaciones_excel(dict_tens,dict_def,c_g_l,q,H_Excel,Fec):
+    H_Excel = pd.ExcelWriter(Fec, mode = 'a')
+    with pd.ExcelWriter(H_Excel) as writer:
+        for num_elemento in dict_tens:
+            DataFrame = pd.DataFrame(columns=[f'Tx-Elemento {num_elemento}',f'Ty-Elemento {num_elemento}',f'Txy-Elemento {num_elemento}'])
+            for num_nodo in dict_tens[num_elemento]:
+                DataFrame.loc[num_nodo] = [dict_tens[num_elemento][num_nodo][0],dict_tens[num_elemento][num_nodo][1],dict_tens[num_elemento][num_nodo][2]]
+            DataFrame.to_excel(writer, sheet_name='Tensiones-Q{}'.format(q),startcol=1,startrow=(num_nodo-1)*6)
+        writer.close()
 
     # for h in range(1,(Desplazamientos.index[-1])+1):
     #     if h%2==0: 
