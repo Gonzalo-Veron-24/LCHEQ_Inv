@@ -55,6 +55,7 @@ def Agregar_datos_excel(Data_frame,nombre_hoja,H_Excel,Fec):
     Data_frame.to_excel(H_Excel, sheet_name=nombre_hoja, index=False)
     H_Excel.close()
 
+
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
     M_elementos=[[x for x in range(1,x+1)]]
@@ -305,13 +306,13 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
 
 def tensiones_deformaciones_excel(dict_tens,dict_def,c_g_l,q,H_Excel,Fec):
-    H_Excel = pd.ExcelWriter(Fec, mode = 'a')
+    H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
     with pd.ExcelWriter(H_Excel) as writer:
         for num_elemento in dict_tens:
             DataFrame = pd.DataFrame(columns=[f'Tx-Elemento {num_elemento}',f'Ty-Elemento {num_elemento}',f'Txy-Elemento {num_elemento}'])
             for num_nodo in dict_tens[num_elemento]:
-                DataFrame.loc[num_nodo] = [dict_tens[num_elemento][num_nodo][0],dict_tens[num_elemento][num_nodo][1],dict_tens[num_elemento][num_nodo][2]]
-            DataFrame.to_excel(writer, sheet_name='Tensiones-Q{}'.format(q),startcol=1,startrow=(num_nodo-1)*6)
+                DataFrame.loc[num_nodo] = [round(dict_tens[num_elemento][num_nodo][0][0],6),round(dict_tens[num_elemento][num_nodo][1][0],6),round(dict_tens[num_elemento][num_nodo][2][0],6)]
+            DataFrame.to_excel(writer, sheet_name=('Tensiones-Q{}'.format(q)),startcol=1,startrow=(num_elemento-1)*6)
         writer.close()
 
     # for h in range(1,(Desplazamientos.index[-1])+1):
