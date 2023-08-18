@@ -119,7 +119,6 @@ def main():
         #los guarda dentro de sus respectivos diccionarios
         #y dentro del excel
         cf.funct_ord_cl(Desplazamientos,sistema_carga,C_L,dict_desplazamientos,dict_sist_carga,Carga,H_Excel,Fecha)
-        print(dict_desplazamientos[f"{Carga}"])
 
         #Carga por elemento
         corrimiento_x_elem = cf.sep_por_elem(dict_desplazamientos[f"{Carga}"],Desplazamientos,C_L)
@@ -130,5 +129,6 @@ def main():
         #Calculamos la deformacion especifica
         D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
-        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,C_G_L,Carga,H_Excel,Fecha)
+
+        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha)
 main()

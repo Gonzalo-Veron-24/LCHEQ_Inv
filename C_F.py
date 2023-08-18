@@ -70,7 +70,7 @@ def M_E(x, y):
 '''Funcion de String fecha'''
 def fecha():
     T_de_M=datetime.datetime.now()
-    T_de_Mstr="./LCHEQ_Inv/"+str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)+".xlsx"
+    T_de_Mstr=str(T_de_M.day)+"-"+str(T_de_M.month)+"-"+str(T_de_M.year)+" "+str(T_de_M.hour)+";"+str(T_de_M.minute)+";"+str(T_de_M.second)+".xlsx"
     return T_de_Mstr
 
 '''Funcion de Matriz de Nodos'''
@@ -200,7 +200,6 @@ def f_e_B(M_N,K,T_C_L,h_excel,fecha):
     Matriz_E=Matriz_E.fillna(0)
     for e in K.keys():
         f_e_A(K[e],Matriz_E)
-    Agregar_datos_excel(Matriz_E,"Matriz Ensamblada",h_excel,fecha)
     return Matriz_E
 
 '''Funcion de armado'''
@@ -300,21 +299,36 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     
     dic_despl[f"{Carga}"] = D_e_o
     dic_sc[f"{Carga}"] = Sist_c_o
-    print(Sist_c_o)
 
-    Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
-    Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
-
-def tensiones_deformaciones_excel(dict_tens,dict_def,c_g_l,q,H_Excel,Fec):
+def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec):
     H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
+    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales)
     with pd.ExcelWriter(H_Excel) as writer:
-        for num_elemento in dict_tens:
-            DataFrame = pd.DataFrame(columns=[f'Tx-Elemento {num_elemento}',f'Ty-Elemento {num_elemento}',f'Txy-Elemento {num_elemento}'])
-            for num_nodo in dict_tens[num_elemento]:
-                DataFrame.loc[num_nodo] = [round(dict_tens[num_elemento][num_nodo][0][0],6),round(dict_tens[num_elemento][num_nodo][1][0],6),round(dict_tens[num_elemento][num_nodo][2][0],6)]
-            DataFrame.to_excel(writer, sheet_name=('Tensiones-Q{}'.format(q)),startcol=1,startrow=(num_elemento-1)*6)
+        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy'])
+        for num_nodo in dic_tens_nodos_distgen:
+            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8)]
+        DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
         writer.close()
 
+def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
+    dic_tens_def_nodos = {}
+    for num_elemento in dict_tens:
+        d = 0
+        for num_nodo in dict_tens[num_elemento]:
+            if num_nodo not in dic_tens_def_nodos:
+                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],dict_tens[num_elemento][num_nodo][1][0],dict_tens[num_elemento][num_nodo][2][0],dict_def[num_elemento][num_nodo][0][0],dict_def[num_elemento][num_nodo][1][0],dict_def[num_elemento][num_nodo][2][0],dist_generales[num_elemento][0][d],dist_generales[num_elemento][1][d],1]
+            else:
+                for tension_def in range(3):
+                    dic_tens_def_nodos[num_nodo][tension_def] += dict_tens[num_elemento][num_nodo][tension_def][0]
+                    dic_tens_def_nodos[num_nodo][tension_def+3] += dict_def[num_elemento][num_nodo][tension_def][0]
+                dic_tens_def_nodos[num_nodo][8] += 1
+            d += 1
+    for num_nodo in dic_tens_def_nodos:
+        for tension_def in range(6):
+            dic_tens_def_nodos[num_nodo][tension_def] /= dic_tens_def_nodos[num_nodo][8]
+    return dic_tens_def_nodos
+
+    
     # for h in range(1,(Desplazamientos.index[-1])+1):
     #     if h%2==0: 
     #         (D_e_o[0][h])/=alto
