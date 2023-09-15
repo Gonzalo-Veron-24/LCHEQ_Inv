@@ -5,6 +5,7 @@ import pandas as pd
 import datetime
 from tqdm.auto import tqdm
 import copy 
+import math
 
 '''Funcion para validar ingreso'''
 def validacion_float(ingreso):
@@ -304,9 +305,9 @@ def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec):
     H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
     dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales)
     with pd.ExcelWriter(H_Excel) as writer:
-        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy'])
+        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy','s_max','angulo_t'])
         for num_nodo in dic_tens_nodos_distgen:
-            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8)]
+            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8),round(dic_tens_nodos_distgen[num_nodo][9],6),dic_tens_nodos_distgen[num_nodo][10]]
         DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
         writer.close()
 
@@ -326,6 +327,13 @@ def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
     for num_nodo in dic_tens_def_nodos:
         for tension_def in range(6):
             dic_tens_def_nodos[num_nodo][tension_def] /= dic_tens_def_nodos[num_nodo][8]
+        ten_max = ((dic_tens_def_nodos[num_nodo][0] + dic_tens_def_nodos[num_nodo][1])/2)+math.sqrt((((dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])/2)**2)+(dic_tens_def_nodos[num_nodo][2])**2)
+        dic_tens_def_nodos[num_nodo].append(ten_max)
+        if (ten_max>2.23 or ten_max<-2.23):
+            angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
+            dic_tens_def_nodos[num_nodo].append(angulo)
+        else:
+            dic_tens_def_nodos[num_nodo].append(0)
     return dic_tens_def_nodos
 
     
