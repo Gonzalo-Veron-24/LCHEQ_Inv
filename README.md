@@ -1,4 +1,4 @@
 # Comentarios
-(Código) Investigación: Caracterización de sistemas alternativos de mamposterías regionales
+(Código) Investigacion: Caracterización de sistemas alternativos de mamposterías regionales
 probando push
 
