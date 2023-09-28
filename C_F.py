@@ -4,7 +4,8 @@ import openpyxl
 import pandas as pd
 import datetime
 from tqdm.auto import tqdm
-import copy
+import copy 
+import math
 
 '''Funcion para validar ingreso'''
 def validacion_float(ingreso):
@@ -54,6 +55,7 @@ def Agregar_datos_excel(Data_frame,nombre_hoja,H_Excel,Fec):
     H_Excel = pd.ExcelWriter(Fec,mode='a')
     Data_frame.to_excel(H_Excel, sheet_name=nombre_hoja, index=False)
     H_Excel.close()
+
 
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
@@ -199,7 +201,6 @@ def f_e_B(M_N,K,T_C_L,h_excel,fecha):
     Matriz_E=Matriz_E.fillna(0)
     for e in K.keys():
         f_e_A(K[e],Matriz_E)
-    Agregar_datos_excel(Matriz_E,"Matriz Ensamblada",h_excel,fecha)
     return Matriz_E
 
 '''Funcion de armado'''
@@ -272,7 +273,7 @@ def sep_por_elem(desplz_ord,desplz,c_l):
             c = 0
     return cargas
 
-def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones):
+def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones,c_g_l):
     cant_recor = cx*cy ##cantidad de elementos
     for i in range(cant_recor):
         dicc_de_nodos_ten = {}
@@ -282,8 +283,8 @@ def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones):
             db = np.dot(d,b_n[j]) #Multiplicación matriz DxB1
             tens_calculadas = np.dot(db,cargas_transf) #tensiones de un nodo
             deform_calculadas = np.dot(b_n[j],cargas_transf)
-            dicc_de_nodos_ten[j] = tens_calculadas
-            dicc_de_nodos_def[j] = deform_calculadas
+            dicc_de_nodos_ten[c_g_l[i+1][0][j-1]] = tens_calculadas
+            dicc_de_nodos_def[c_g_l[i+1][0][j-1]] = deform_calculadas
         dic_tensiones[i+1] = dicc_de_nodos_ten
         dic_deformaciones[i+1] = dicc_de_nodos_def
 
@@ -300,9 +301,42 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     dic_despl[f"{Carga}"] = D_e_o
     dic_sc[f"{Carga}"] = Sist_c_o
 
-    Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
-    Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
+def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec):
+    H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
+    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales)
+    with pd.ExcelWriter(H_Excel) as writer:
+        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy','s_max','angulo_t'])
+        for num_nodo in dic_tens_nodos_distgen:
+            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8),round(dic_tens_nodos_distgen[num_nodo][9],6),dic_tens_nodos_distgen[num_nodo][10]]
+        DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
+        writer.close()
 
+def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
+    dic_tens_def_nodos = {}
+    for num_elemento in dict_tens:
+        d = 0
+        for num_nodo in dict_tens[num_elemento]:
+            if num_nodo not in dic_tens_def_nodos:
+                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],dict_tens[num_elemento][num_nodo][1][0],dict_tens[num_elemento][num_nodo][2][0],dict_def[num_elemento][num_nodo][0][0],dict_def[num_elemento][num_nodo][1][0],dict_def[num_elemento][num_nodo][2][0],dist_generales[num_elemento][0][d],dist_generales[num_elemento][1][d],1]
+            else:
+                for tension_def in range(3):
+                    dic_tens_def_nodos[num_nodo][tension_def] += dict_tens[num_elemento][num_nodo][tension_def][0]
+                    dic_tens_def_nodos[num_nodo][tension_def+3] += dict_def[num_elemento][num_nodo][tension_def][0]
+                dic_tens_def_nodos[num_nodo][8] += 1
+            d += 1
+    for num_nodo in dic_tens_def_nodos:
+        for tension_def in range(6):
+            dic_tens_def_nodos[num_nodo][tension_def] /= dic_tens_def_nodos[num_nodo][8]
+        ten_max = ((dic_tens_def_nodos[num_nodo][0] + dic_tens_def_nodos[num_nodo][1])/2)+math.sqrt((((dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])/2)**2)+(dic_tens_def_nodos[num_nodo][2])**2)
+        dic_tens_def_nodos[num_nodo].append(ten_max)
+        if (ten_max>2.23 or ten_max<-2.23):
+            angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
+            dic_tens_def_nodos[num_nodo].append(angulo)
+        else:
+            dic_tens_def_nodos[num_nodo].append(0)
+    return dic_tens_def_nodos
+
+    
     # for h in range(1,(Desplazamientos.index[-1])+1):
     #     if h%2==0: 
     #         (D_e_o[0][h])/=alto

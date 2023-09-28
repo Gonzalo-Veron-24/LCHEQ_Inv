@@ -119,31 +119,16 @@ def main():
         #los guarda dentro de sus respectivos diccionarios
         #y dentro del excel
         cf.funct_ord_cl(Desplazamientos,sistema_carga,C_L,dict_desplazamientos,dict_sist_carga,Carga,H_Excel,Fecha)
-        print(dict_desplazamientos[f"{Carga}"])
 
         #Carga por elemento
         corrimiento_x_elem = cf.sep_por_elem(dict_desplazamientos[f"{Carga}"],Desplazamientos,C_L)
         
         #Calculamos las tensiones y deformaciones y las guardamos en un diccionario
-        cf.tens_deformaciones(Hx,Vy,D,B_numerico,corrimiento_x_elem,dic_tensiones,dic_deformaciones)
+        cf.tens_deformaciones(Hx,Vy,D,B_numerico,corrimiento_x_elem,dic_tensiones,dic_deformaciones,C_G_L)
 
         #Calculamos la deformacion especifica
         D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
         print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
 
-
-    print("\nTensiones Elemento (Inferior) N°1;9;18 (NODO N°1):\n")
-    print(f"Tension X:\n Elemento N°1->{dic_tensiones[1][1][0]}\tElemento N°9->{dic_tensiones[9][1][0]}\tElemento N°18->{dic_tensiones[18][1][0]}") 
-    print(f"Tension Y:\n Elemento N°1->{dic_tensiones[1][1][1]}\tElemento N°9->{dic_tensiones[9][1][1]}\tElemento N°18->{dic_tensiones[18][1][1]}") 
-    print(f"Tension X-Y:\n Elemento N°1->{dic_tensiones[1][1][2]}\tElemento N°9->{dic_tensiones[9][1][2]}\tElemento N°18->{dic_tensiones[18][1][2]}")
-
-    print("\nTensiones Elemento (Medio) N°306;315;324 (NODO N°1):\n")
-    print(f"Tension X:\n Elemento N°306->{dic_tensiones[306][1][0]}\tElemento N°315->{dic_tensiones[315][1][0]}\tElemento N°324->{dic_tensiones[324][1][0]}")
-    print(f"Tension Y:\n Elemento N°306->{dic_tensiones[306][1][1]}\tElemento N°315->{dic_tensiones[315][1][1]}\tElemento N°324->{dic_tensiones[324][1][1]}")
-    print(f"Tension X-Y:\n Elemento N°306->{dic_tensiones[306][1][2]}\tElemento N°315->{dic_tensiones[315][1][2]}\tElemento N°324->{dic_tensiones[324][1][2]}")
-
-    print("\nTensiones Elemento (Superior) N°630;639;648 (NODO N°1):\n")
-    print(f"Tension X:\n Elemento N°630->{dic_tensiones[630][1][0]}\tElemento N°639->{dic_tensiones[639][1][0]}\tElemento N°648->{dic_tensiones[648][1][0]}")
-    print(f"Tension Y:\n Elemento N°630->{dic_tensiones[630][1][1]}\tElemento N°639->{dic_tensiones[639][1][1]}\tElemento N°648->{dic_tensiones[648][1][1]}")
-    print(f"Tension X-Y:\n Elemento N°630->{dic_tensiones[630][1][2]}\tElemento N°639->{dic_tensiones[639][1][2]}\tElemento N°648->{dic_tensiones[648][1][2]}")
+        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha)
 main()
