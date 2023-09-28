@@ -4,7 +4,8 @@ import openpyxl
 import pandas as pd
 import datetime
 from tqdm.auto import tqdm
-import copy
+import copy 
+import math
 
 '''Funcion para validar ingreso'''
 def validacion_float(ingreso):
@@ -54,6 +55,7 @@ def Agregar_datos_excel(Data_frame,nombre_hoja,H_Excel,Fec):
     H_Excel = pd.ExcelWriter(Fec,mode='a')
     Data_frame.to_excel(H_Excel, sheet_name=nombre_hoja, index=False)
     H_Excel.close()
+
 
 '''Funcion de Matriz de Elementos'''
 def M_E(x, y):
@@ -128,10 +130,10 @@ def T_I(N_L,D_G, Xi, ita):
     return d
 
 '''Jacobianos e inversas'''
-def J_I_D(T_I):
+def J_I_D(T_i):
     j_i_d = {}
-    for i in T_I.keys():
-        J=np.array([[float(2*(T_I[i][2])),float(2*(T_I[i][4]))],[float(2*(T_I[i][3])),float(2*(T_I[i][5]))]])
+    for i in T_i.keys():
+        J=np.array([[float((T_i[i][2])),float((T_i[i][4]))],[float((T_i[i][3])),float((T_i[i][5]))]])
         Inv_J=np.linalg.inv(J)
         Det_J = np.linalg.det(J)
         j_i_d[i]=[J,Inv_J,Det_J]
@@ -199,7 +201,6 @@ def f_e_B(M_N,K,T_C_L,h_excel,fecha):
     Matriz_E=Matriz_E.fillna(0)
     for e in K.keys():
         f_e_A(K[e],Matriz_E)
-    Agregar_datos_excel(Matriz_E,"Matriz Ensamblada",h_excel,fecha)
     return Matriz_E
 
 '''Funcion de armado'''
@@ -259,12 +260,12 @@ def B_valores(cl, B, Xi, ita):
         contador+=2
     return b_num  
 
-def sep_por_elem(x,x1,c_l):
+def sep_por_elem(desplz_ord,desplz,c_l):
     cargas = []
     c = 0
     paso = []
-    for i in (x.index):
-        paso.append(x1[1][i])
+    for i in (desplz_ord.index):
+        paso.append(desplz[0][i])
         c+=1
         if(c==8):
             cargas.append(paso)
@@ -272,71 +273,76 @@ def sep_por_elem(x,x1,c_l):
             c = 0
     return cargas
 
-def tens_m2(cx,cy,d,b_n,carg_pe):
+def tens_deformaciones(cx,cy,d,b_n,carg_pe,dic_tensiones,dic_deformaciones,c_g_l):
     cant_recor = cx*cy ##cantidad de elementos
-    dicc_ten = {}
     for i in range(cant_recor):
-        dicc_ten_paso = {}
+        dicc_de_nodos_ten = {}
+        dicc_de_nodos_def = {}
+        cargas_transf = np.transpose(np.array([carg_pe[i]]))
         for j in range(1,5):
-            multp1 = np.dot(b_n[j],carg_pe[i]) #matriz B por las cargas del elemento
-            multp2 = np.dot(multp1,d) #el resultado anteriror por D
-            dicc_ten_paso[j] = multp2
-        dicc_ten[i+1] = dicc_ten_paso
-    return dicc_ten
+            db = np.dot(d,b_n[j]) #Multiplicación matriz DxB1
+            tens_calculadas = np.dot(db,cargas_transf) #tensiones de un nodo
+            deform_calculadas = np.dot(b_n[j],cargas_transf)
+            dicc_de_nodos_ten[c_g_l[i+1][0][j-1]] = tens_calculadas
+            dicc_de_nodos_def[c_g_l[i+1][0][j-1]] = deform_calculadas
+        dic_tensiones[i+1] = dicc_de_nodos_ten
+        dic_deformaciones[i+1] = dicc_de_nodos_def
 
-def Tn(d,b,dz):
-    pass
+def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
+    D_e_o = pd.DataFrame([0.0 for i in range(len(cl))],index=cl)
+    Sist_c_o = pd.DataFrame([0.0 for i in range(len(cl))],index=cl)
 
-def deformac_tens(Dat_calc,i,matriz_nodos,matriz_ensablada,t_c_l,h_excel,fecha,coordenadas_locales,alto,ancho,datos_ensayo,hx,vy,d,b_num):
-    Carga = validacion_float("\nCarga (N): ")
-    s_c = S_C(Carga,matriz_nodos,t_c_l)
-    Agregar_datos_excel(s_c,"Sist. Q={}".format(Carga),h_excel,fecha)
-
-    M_E_n = np.array(matriz_ensablada)
-    M_E_ni = np.linalg.inv(M_E_n)
-
-    Desplazamientos = pd.DataFrame(np.dot(M_E_ni,s_c),index=t_c_l)
-    print(f"Desplazamientos sin ordenar Q {Carga}: \n{Desplazamientos}")
-
-    D_e_o = pd.DataFrame([0.0 for i in range(len(coordenadas_locales))],index=coordenadas_locales)
-    Sist_c_o = pd.DataFrame([0.0 for i in range(len(coordenadas_locales))],index=coordenadas_locales)
-
-    for j in Desplazamientos.index:
+    for j in despl.index:
         for e in D_e_o.index:
             if j == e:
-                D_e_o[0][e] = Desplazamientos[0][e]
-                Sist_c_o[0][e] = s_c[1][e] 
+                D_e_o[0][e] = despl[0][e]
+                Sist_c_o[0][e] = sc[1][e]  
+    
+    dic_despl[f"{Carga}"] = D_e_o
+    dic_sc[f"{Carga}"] = Sist_c_o
 
-    Agregar_datos_excel(Sist_c_o,"Sist. ord. Q={}".format(Carga),h_excel,fecha)
-    Agregar_datos_excel(D_e_o,"Desplaz. Q={}".format(Carga),h_excel,fecha)
+def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec):
+    H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
+    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales)
+    with pd.ExcelWriter(H_Excel) as writer:
+        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy','s_max','angulo_t'])
+        for num_nodo in dic_tens_nodos_distgen:
+            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8),round(dic_tens_nodos_distgen[num_nodo][9],6),dic_tens_nodos_distgen[num_nodo][10]]
+        DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
+        writer.close()
 
-    paso = D_e_o.copy() #Creo una copia del dataframe de desplzamientos
-    Dat_calc['Desplazamientos'][i+1] = paso
-    print(f"Desplazamientos ordenados Q {Carga}: \n{Dat_calc['Desplazamientos'][i+1]}")
-
-    for h in range(1,(Desplazamientos.index[-1])+1):
-        if h%2==0: 
-            (D_e_o[0][h])/=alto
+def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
+    dic_tens_def_nodos = {}
+    for num_elemento in dict_tens:
+        d = 0
+        for num_nodo in dict_tens[num_elemento]:
+            if num_nodo not in dic_tens_def_nodos:
+                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],dict_tens[num_elemento][num_nodo][1][0],dict_tens[num_elemento][num_nodo][2][0],dict_def[num_elemento][num_nodo][0][0],dict_def[num_elemento][num_nodo][1][0],dict_def[num_elemento][num_nodo][2][0],dist_generales[num_elemento][0][d],dist_generales[num_elemento][1][d],1]
+            else:
+                for tension_def in range(3):
+                    dic_tens_def_nodos[num_nodo][tension_def] += dict_tens[num_elemento][num_nodo][tension_def][0]
+                    dic_tens_def_nodos[num_nodo][tension_def+3] += dict_def[num_elemento][num_nodo][tension_def][0]
+                dic_tens_def_nodos[num_nodo][8] += 1
+            d += 1
+    for num_nodo in dic_tens_def_nodos:
+        for tension_def in range(6):
+            dic_tens_def_nodos[num_nodo][tension_def] /= dic_tens_def_nodos[num_nodo][8]
+        ten_max = ((dic_tens_def_nodos[num_nodo][0] + dic_tens_def_nodos[num_nodo][1])/2)+math.sqrt((((dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])/2)**2)+(dic_tens_def_nodos[num_nodo][2])**2)
+        dic_tens_def_nodos[num_nodo].append(ten_max)
+        if (ten_max>2.23 or ten_max<-2.23):
+            angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
+            dic_tens_def_nodos[num_nodo].append(angulo)
         else:
-            (D_e_o[0][h])/=ancho
+            dic_tens_def_nodos[num_nodo].append(0)
+    return dic_tens_def_nodos
 
-    paso2 = D_e_o.copy()
-    Dat_calc['Desplazamientos_esp'][i+1] = paso2
-    Agregar_datos_excel(Dat_calc['Desplazamientos_esp'][i+1],"Desplaz_esp. Q={}".format(Carga),h_excel,fecha)
+    
+    # for h in range(1,(Desplazamientos.index[-1])+1):
+    #     if h%2==0: 
+    #         (D_e_o[0][h])/=alto
+    #     else:
+    #         (D_e_o[0][h])/=ancho
 
-    Dat_calc['tensiones_metodo1'][i+1] = (D_e_o*datos_ensayo[0])
-    Agregar_datos_excel(Dat_calc['tensiones_metodo1'][i+1],"tensiones. Q={}".format(Carga),h_excel,fecha)
-    print(f"Tensiones Q {Carga}: \n{Dat_calc['tensiones_metodo1'][i+1]}")
-
-    c_p_e = sep_por_elem(Sist_c_o,s_c,coordenadas_locales)
-    Dat_calc['cargas_por_elemento'][i+1] = c_p_e
-
-    # Dat_calc['tensiones_metodo2'][i+1] = tens_m2(hx,vy,d,b_num,c_p_e) 
-
-    D_especifica = D_E(Desplazamientos, alto, vy)
-    print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
-
-    # '''tensiones_m2 es un diccionario que como clave tiene el numero de todos los elementos
-    # ej: un valor es 1, el otro 2 y asi hasta 100 que en este caso es nuestro ultimo elemento.
-    # Cada uno de esas claves tiene otro diccionario como valor. Dicho diccionario contiene 4 pares
-    # clave-valor, las claves son 1,2,3,4 (nodos) y como valor contienen una lista con las 3 tensiones'''
+    # paso2 = D_e_o.copy()
+    # Dat_calc['Desplazamientos_esp'][i+1] = paso2
+    # Agregar_datos_excel(Dat_calc['Desplazamientos_esp'][i+1],"Desplaz_esp. Q={}".format(Carga),h_excel,fecha)

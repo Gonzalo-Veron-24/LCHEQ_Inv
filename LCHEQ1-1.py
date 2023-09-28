@@ -88,25 +88,47 @@ def main():
     C_G_L=cf.T_C(Hx,Vy,M_E_F,M_N)                           # | TABLA DE CONECTIVIDAD
     D_Generales=cf.D_G(Hx,Vy,Ancho,Alto)                    # | DISTANCIAS GENERALES
     C_L = cf.coord_loc(C_G_L,D_Generales)                   # | Coordenadas Locales
-    T_i=cf.T_I(Nodo_list,D_Generales,Xi,ita)                # | TRANSFORMACIÓN ISOPARAMÉTRICA    
-    j_i_d = cf.J_I_D(T_i)                                   # | JACOBIANOS, INVERSAS Y DETERMINANTES          
+    T_i=cf.T_I(Nodo_list,D_Generales,Xi,ita)                # | TRANSFORMACIÓN ISOPARAMÉTRICA  
+    j_i_d = cf.J_I_D(T_i)                                   # | JACOBIANOS, INVERSAS Y DETERMINANTES
     A = cf.M_A(j_i_d)                                       # | MATRICES A
-    G = cf.M_G(Xi, ita)                                     # | MATRIZ G     
+    G = cf.M_G(Xi, ita)                                     # | MATRIZ G
     Bt = {}                                                 # | MATRICE B Y Bt
     B = cf.M_B(A,G,Bt)
     B_numerico = cf.B_valores(CL,B,Xi,ita)                  # | B con sus respectivos valores
-    D = cf.M_D(Datos_Ensayo)                                # | MATRIZ D
+    D = cf.M_D(Datos_Ensayo)                                # | MATRIZ D    
     K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,Datos_Ensayo[11],C_G_L)  # | MATRICES K
-    print(K[1])
     M_E = cf.f_e_B(M_N,K,T_C_L,H_Excel,Fecha)                             # | ENSAMBLE
+    M_E_n = np.array(M_E)
+    M_E_ni = np.linalg.inv(M_E_n)
     Cant_C = cf.validar_dato(1,10,"CANTIDAD DE ENSAYOS")    # | Cantidad de ensayos
-    Datos_calculados = {'Desplazamientos':{},'Desplazamientos_esp':{},'tensiones_metodo1':{},'tensiones_metodo2':{},'cargas_por_elemento':{}}
 
+
+    dict_sist_carga = {}
+    dict_desplazamientos = {}
+    dic_tensiones = {}
+    dic_deformaciones = {}
     for i in range(Cant_C):
-        cf.deformac_tens(Datos_calculados,i,M_N,M_E,T_C_L,H_Excel,Fecha,C_L,Alto,Ancho,Datos_Ensayo,Hx,Vy,D,B_numerico)
+        #Ingreso de la carga
+        Carga = cf.validacion_float("\nCarga (N): ")
+        #Calculo del sistema de cargas (Sin ordenar)
+        sistema_carga = cf.S_C(Carga,M_N,T_C_L)
+        #Calculo de los desplazamientos (Sin ordenar)
+        Desplazamientos = pd.DataFrame(np.dot(M_E_ni,sistema_carga),index=T_C_L) #Revisar porque las nuevas versiones nos hacen variar tanto el resultado
 
-    # print("Tensiones")
-    # print(tensiones_m2[1][1][1][1])
+        #Funcion que ordena los desplazamientos, el sistema de cargas
+        #los guarda dentro de sus respectivos diccionarios
+        #y dentro del excel
+        cf.funct_ord_cl(Desplazamientos,sistema_carga,C_L,dict_desplazamientos,dict_sist_carga,Carga,H_Excel,Fecha)
 
+        #Carga por elemento
+        corrimiento_x_elem = cf.sep_por_elem(dict_desplazamientos[f"{Carga}"],Desplazamientos,C_L)
+        
+        #Calculamos las tensiones y deformaciones y las guardamos en un diccionario
+        cf.tens_deformaciones(Hx,Vy,D,B_numerico,corrimiento_x_elem,dic_tensiones,dic_deformaciones,C_G_L)
 
+        #Calculamos la deformacion especifica
+        D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
+        print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+
+        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha)
 main()
