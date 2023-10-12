@@ -128,7 +128,7 @@ def main():
 
         #Calculamos la deformacion especifica
         D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
-        print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+        print("\nDeformacion especifica igual a: {}\n".format(D_especifica))
 
         cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha)
 main()
