@@ -130,5 +130,5 @@ def main():
         D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
         print("\nDeformacion especifica igual a: {}\n".format(D_especifica))
 
-        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha)
+        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha,Ancho,Hx)
 main()

@@ -52,8 +52,8 @@ def malla(elem_x, elem_y, tam_x, tam_y):
     gmsh.finalize()
 
 if __name__ == '__main__':
-    elem_x = 10
-    elem_y = 15
-    tam_x = 36
-    tam_y = 36
+    elem_x = 18
+    elem_y = 36
+    tam_x = 10
+    tam_y = 10
     malla(elem_x,elem_y,tam_x,tam_y)

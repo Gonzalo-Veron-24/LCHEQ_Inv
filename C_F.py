@@ -301,23 +301,57 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     dic_despl[f"{Carga}"] = D_e_o
     dic_sc[f"{Carga}"] = Sist_c_o
 
-def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec):
+def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec,Ancho,Hx):
     H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
-    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales)
+    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales,Ancho,Hx)
     with pd.ExcelWriter(H_Excel) as writer:
-        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy','s_max','angulo_t'])
+        DataFrame = pd.DataFrame(columns=['x',
+                                          'y',
+                                          'sx',
+                                          'sy',
+                                          'txy',
+                                          'dx',
+                                          'dx',
+                                          'dxy',
+                                          's_max',
+                                          'Enriquecido',
+                                          'angulo_t',
+                                          'A',
+                                          'B',
+                                          'C'])
         for num_nodo in dic_tens_nodos_distgen:
-            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8),round(dic_tens_nodos_distgen[num_nodo][9],6),dic_tens_nodos_distgen[num_nodo][10]]
+            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],
+                                      dic_tens_nodos_distgen[num_nodo][7],
+                                      round(dic_tens_nodos_distgen[num_nodo][0],6),
+                                      round(dic_tens_nodos_distgen[num_nodo][1],6),
+                                      round(dic_tens_nodos_distgen[num_nodo][2],6),
+                                      round(dic_tens_nodos_distgen[num_nodo][3],8),
+                                      round(dic_tens_nodos_distgen[num_nodo][4],8),
+                                      round(dic_tens_nodos_distgen[num_nodo][5],8),
+                                      round(dic_tens_nodos_distgen[num_nodo][9],6),
+                                      dic_tens_nodos_distgen[num_nodo][10],
+                                      dic_tens_nodos_distgen[num_nodo][11],
+                                      dic_tens_nodos_distgen[num_nodo][12],
+                                      dic_tens_nodos_distgen[num_nodo][13],
+                                      dic_tens_nodos_distgen[num_nodo][14]
+                                      ]
         DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
         writer.close()
 
-def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
+def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales,Ancho,Hx):
     dic_tens_def_nodos = {}
     for num_elemento in dict_tens:
         d = 0
         for num_nodo in dict_tens[num_elemento]:
             if num_nodo not in dic_tens_def_nodos:
-                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],dict_tens[num_elemento][num_nodo][1][0],dict_tens[num_elemento][num_nodo][2][0],dict_def[num_elemento][num_nodo][0][0],dict_def[num_elemento][num_nodo][1][0],dict_def[num_elemento][num_nodo][2][0],dist_generales[num_elemento][0][d],dist_generales[num_elemento][1][d],1]
+                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],
+                                                dict_tens[num_elemento][num_nodo][1][0],
+                                                dict_tens[num_elemento][num_nodo][2][0],
+                                                dict_def[num_elemento][num_nodo][0][0],
+                                                dict_def[num_elemento][num_nodo][1][0],
+                                                dict_def[num_elemento][num_nodo][2][0],
+                                                dist_generales[num_elemento][0][d],
+                                                dist_generales[num_elemento][1][d],1]
             else:
                 for tension_def in range(3):
                     dic_tens_def_nodos[num_nodo][tension_def] += dict_tens[num_elemento][num_nodo][tension_def][0]
@@ -329,10 +363,24 @@ def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
             dic_tens_def_nodos[num_nodo][tension_def] /= dic_tens_def_nodos[num_nodo][8]
         ten_max = ((dic_tens_def_nodos[num_nodo][0] + dic_tens_def_nodos[num_nodo][1])/2)+math.sqrt((((dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])/2)**2)+(dic_tens_def_nodos[num_nodo][2])**2)
         dic_tens_def_nodos[num_nodo].append(ten_max)
-        if (ten_max>2.23 or ten_max<-2.23):
-            angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
-            dic_tens_def_nodos[num_nodo].append(angulo)
+        if (dic_tens_def_nodos[num_nodo][6]<=(Ancho*Hx*0.2) or dic_tens_def_nodos[num_nodo][6]>=((Ancho*Hx)-(Ancho*Hx*0.2))):
+            dic_tens_def_nodos[num_nodo].append(1)
+            if (ten_max>2.23 or ten_max<-2.23):
+                angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
+                dic_tens_def_nodos[num_nodo].append(angulo)
+                dic_tens_def_nodos[num_nodo].append(1)
+                dic_tens_def_nodos[num_nodo].append(1)
+                dic_tens_def_nodos[num_nodo].append(1)
+            else:
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
         else:
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
             dic_tens_def_nodos[num_nodo].append(0)
     return dic_tens_def_nodos
 
