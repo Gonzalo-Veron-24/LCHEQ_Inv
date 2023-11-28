@@ -301,9 +301,14 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     dic_despl[f"{Carga}"] = D_e_o
     dic_sc[f"{Carga}"] = Sist_c_o
 
+def recta_x_nodo():
+    pass
+
 def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec,Ancho,Hx):
+    x = sympy.symbols('x')
+    y = sympy.symbols('y')
     H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
-    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales,Ancho,Hx)
+    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales,Ancho,Hx,x,y)
     with pd.ExcelWriter(H_Excel) as writer:
         DataFrame = pd.DataFrame(columns=['x',
                                           'y',
@@ -318,7 +323,8 @@ def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec,A
                                           'angulo_t',
                                           'A',
                                           'B',
-                                          'C'])
+                                          'C',
+                                          'recta'])
         for num_nodo in dic_tens_nodos_distgen:
             DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],
                                       dic_tens_nodos_distgen[num_nodo][7],
@@ -333,12 +339,13 @@ def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec,A
                                       dic_tens_nodos_distgen[num_nodo][11],
                                       dic_tens_nodos_distgen[num_nodo][12],
                                       dic_tens_nodos_distgen[num_nodo][13],
-                                      dic_tens_nodos_distgen[num_nodo][14]
+                                      dic_tens_nodos_distgen[num_nodo][14],
+                                      dic_tens_nodos_distgen[num_nodo][15]
                                       ]
         DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
         writer.close()
 
-def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales,Ancho,Hx):
+def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales,Ancho,Hx,x,y):
     dic_tens_def_nodos = {}
     for num_elemento in dict_tens:
         d = 0
@@ -371,12 +378,19 @@ def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales,Ancho,Hx):
                 dic_tens_def_nodos[num_nodo].append(1)
                 dic_tens_def_nodos[num_nodo].append(1)
                 dic_tens_def_nodos[num_nodo].append(1)
+                pendiente = dic_tens_def_nodos[num_nodo][11]
+                xo = dic_tens_def_nodos[num_nodo][6]
+                yo = dic_tens_def_nodos[num_nodo][7]
+                rect = pendiente * x + pendiente * xo + yo
+                dic_tens_def_nodos[num_nodo].append(rect)
             else:
                 dic_tens_def_nodos[num_nodo].append(0)
                 dic_tens_def_nodos[num_nodo].append(0)
                 dic_tens_def_nodos[num_nodo].append(0)
                 dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
         else:
+            dic_tens_def_nodos[num_nodo].append(0)
             dic_tens_def_nodos[num_nodo].append(0)
             dic_tens_def_nodos[num_nodo].append(0)
             dic_tens_def_nodos[num_nodo].append(0)
