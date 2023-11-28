@@ -41,7 +41,7 @@ def ingreso_datos_ensayo(Array_Date):
             else:
                 temp_list.append(validacion_float('* Deformacion Correlativa, idc{}{}: '.format(e, e - 1 if e == 3 else e + 1)))
         print()
-    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
+    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '),1, validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
     Array_Date.extend(temp_list) #L1 = 1; T = 1; G12; G13; G23
 
 "Funcion de barra de carga"
@@ -237,17 +237,17 @@ def S_C(C,m_n,T_C_L):
 
     return sist_c
 
-'''Deformaciones especificas'''
-def D_E(Despz, alto, cant_ey):
-    Su = 0
-    count = 0
-    for i in range(1,(Despz.index[-1])+1):
-        if (Despz.index[i-1])%2==0:
-            Su+=abs(Despz[0][i])
-            count+=1
+# '''Deformaciones especificas'''
+# def D_E(Despz, alto, cant_ey):
+#     Su = 0
+#     count = 0
+#     for i in range(1,(Despz.index[-1])+1):
+#         if (Despz.index[i-1])%2==0:
+#             Su+=abs(Despz[0][i])
+#             count+=1
 
-    D_e = Su*2/((alto*cant_ey)*count)
-    return D_e
+#     D_e = Su*2/((alto*cant_ey)*count)
+#     return D_e
 
 
 def B_valores(cl, B, Xi, ita):
