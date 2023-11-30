@@ -381,7 +381,7 @@ def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales,Ancho,Hx,x,y)
                 pendiente = dic_tens_def_nodos[num_nodo][11]
                 xo = dic_tens_def_nodos[num_nodo][6]
                 yo = dic_tens_def_nodos[num_nodo][7]
-                rect = pendiente * x + pendiente * xo + yo
+                rect = pendiente * x - pendiente * xo + yo
                 dic_tens_def_nodos[num_nodo].append(rect)
             else:
                 dic_tens_def_nodos[num_nodo].append(0)
