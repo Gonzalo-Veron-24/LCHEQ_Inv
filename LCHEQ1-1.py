@@ -98,6 +98,7 @@ def main():
     D = cf.M_D(Datos_Ensayo)                                # | MATRIZ D    
     K = cf.M_K(B,Bt,D,Xi,ita,j_i_d,Datos_Ensayo[11],C_G_L)  # | MATRICES K
     M_E = cf.f_e_B(M_N,K,T_C_L,H_Excel,Fecha)                             # | ENSAMBLE
+    print(M_E)
     M_E_n = np.array(M_E)
     M_E_ni = np.linalg.inv(M_E_n)
     Cant_C = cf.validar_dato(1,10,"CANTIDAD DE ENSAYOS")    # | Cantidad de ensayos
