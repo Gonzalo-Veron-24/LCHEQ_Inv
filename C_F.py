@@ -97,7 +97,7 @@ def T_C(x,y,M_El,M_No):
 def coord_loc(c_g_l,d_gn):
     c_l = []
     for i in c_g_l.keys():
-        print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,c_g_l[i][0],c_g_l[i][1],d_gn[i][0],d_gn[i][1]))
+        # print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,c_g_l[i][0],c_g_l[i][1],d_gn[i][0],d_gn[i][1]))
         for e in c_g_l[i][1]:
             c_l.append(e)
     return c_l
