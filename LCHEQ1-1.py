@@ -126,9 +126,9 @@ def main():
         #Calculamos las tensiones y deformaciones y las guardamos en un diccionario
         cf.tens_deformaciones(Hx,Vy,D,B_numerico,corrimiento_x_elem,dic_tensiones,dic_deformaciones,C_G_L)
 
-        #Calculamos la deformacion especifica
-        D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
-        print("\nLa Deformacion especifica es igual a: {}\n".format(D_especifica))
+        # #Calculamos la deformacion especifica
+        # D_especifica = cf.D_E(Desplazamientos,Alto,Vy)
+        # print("\nDeformacion especifica igual a: {}\n".format(D_especifica))
 
-        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha)
+        cf.tensiones_deformaciones_excel(dic_tensiones,dic_deformaciones,D_Generales,Carga,H_Excel,Fecha,Ancho,Hx)
 main()

@@ -41,7 +41,7 @@ def ingreso_datos_ensayo(Array_Date):
             else:
                 temp_list.append(validacion_float('* Deformacion Correlativa, idc{}{}: '.format(e, e - 1 if e == 3 else e + 1)))
         print()
-    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '), validacion_float('* Factor de Ajuste incremental (λ): '), validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
+    temp_list.extend([validacion_float('\n* Valor promedio de ancho (L1): '),1, validacion_float('* Modulo Tracción (Et): '), validacion_float('* Resistencia Tracción (Ft): '),1,1,float(temp_list[0]/(2*(1+temp_list[3]))),float(temp_list[0]/(2*(1+temp_list[4]))),float(temp_list[1]/2/(1+temp_list[5]))])
     Array_Date.extend(temp_list) #L1 = 1; T = 1; G12; G13; G23
 
 "Funcion de barra de carga"
@@ -97,7 +97,7 @@ def T_C(x,y,M_El,M_No):
 def coord_loc(c_g_l,d_gn):
     c_l = []
     for i in c_g_l.keys():
-        print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,c_g_l[i][0],c_g_l[i][1],d_gn[i][0],d_gn[i][1]))
+        # print("\nElemento N°{}: \nCoordenadas Globales: {} \nCoordenadas Locales: {} \nDistancias en X: {} \nDistancias en Y: {}".format(i,c_g_l[i][0],c_g_l[i][1],d_gn[i][0],d_gn[i][1]))
         for e in c_g_l[i][1]:
             c_l.append(e)
     return c_l
@@ -237,17 +237,17 @@ def S_C(C,m_n,T_C_L):
 
     return sist_c
 
-'''Deformaciones especificas'''
-def D_E(Despz, alto, cant_ey):
-    Su = 0
-    count = 0
-    for i in range(1,(Despz.index[-1])+1):
-        if (Despz.index[i-1])%2==0:
-            Su+=abs(Despz[0][i])
-            count+=1
+# '''Deformaciones especificas'''
+# def D_E(Despz, alto, cant_ey):
+#     Su = 0
+#     count = 0
+#     for i in range(1,(Despz.index[-1])+1):
+#         if (Despz.index[i-1])%2==0:
+#             Su+=abs(Despz[0][i])
+#             count+=1
 
-    D_e = Su*2/((alto*cant_ey)*count)
-    return D_e
+#     D_e = Su*2/((alto*cant_ey)*count)
+#     return D_e
 
 
 def B_valores(cl, B, Xi, ita):
@@ -301,23 +301,64 @@ def funct_ord_cl(despl,sc,cl,dic_despl,dic_sc,Carga,h_excel,fecha):
     dic_despl[f"{Carga}"] = D_e_o
     dic_sc[f"{Carga}"] = Sist_c_o
 
-def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec):
+def recta_x_nodo():
+    pass
+
+def tensiones_deformaciones_excel(dict_tens,dict_def,d_generales,q,H_Excel,Fec,Ancho,Hx):
+    x = sympy.symbols('x')
+    y = sympy.symbols('y')
     H_Excel = pd.ExcelWriter(Fec, mode = 'a',if_sheet_exists='replace')
-    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales)
+    dic_tens_nodos_distgen = prom_tensiones_deformaciones(dict_tens,dict_def,d_generales,Ancho,Hx,x,y)
     with pd.ExcelWriter(H_Excel) as writer:
-        DataFrame = pd.DataFrame(columns=['x','y','sx','sy','txy','dx','dx','dxy','s_max','angulo_t'])
+        DataFrame = pd.DataFrame(columns=['x',
+                                          'y',
+                                          'sx',
+                                          'sy',
+                                          'txy',
+                                          'dx',
+                                          'dx',
+                                          'dxy',
+                                          's_max',
+                                          'Enriquecido',
+                                          'angulo_t',
+                                          'A',
+                                          'B',
+                                          'C',
+                                          'recta'])
         for num_nodo in dic_tens_nodos_distgen:
-            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],dic_tens_nodos_distgen[num_nodo][7],round(dic_tens_nodos_distgen[num_nodo][0],6),round(dic_tens_nodos_distgen[num_nodo][1],6),round(dic_tens_nodos_distgen[num_nodo][2],6),round(dic_tens_nodos_distgen[num_nodo][3],8),round(dic_tens_nodos_distgen[num_nodo][4],8),round(dic_tens_nodos_distgen[num_nodo][5],8),round(dic_tens_nodos_distgen[num_nodo][9],6),dic_tens_nodos_distgen[num_nodo][10]]
+            DataFrame.loc[num_nodo]= [dic_tens_nodos_distgen[num_nodo][6],
+                                      dic_tens_nodos_distgen[num_nodo][7],
+                                      round(dic_tens_nodos_distgen[num_nodo][0],6),
+                                      round(dic_tens_nodos_distgen[num_nodo][1],6),
+                                      round(dic_tens_nodos_distgen[num_nodo][2],6),
+                                      round(dic_tens_nodos_distgen[num_nodo][3],8),
+                                      round(dic_tens_nodos_distgen[num_nodo][4],8),
+                                      round(dic_tens_nodos_distgen[num_nodo][5],8),
+                                      round(dic_tens_nodos_distgen[num_nodo][9],6),
+                                      dic_tens_nodos_distgen[num_nodo][10],
+                                      dic_tens_nodos_distgen[num_nodo][11],
+                                      dic_tens_nodos_distgen[num_nodo][12],
+                                      dic_tens_nodos_distgen[num_nodo][13],
+                                      dic_tens_nodos_distgen[num_nodo][14],
+                                      dic_tens_nodos_distgen[num_nodo][15]
+                                      ]
         DataFrame.to_excel(writer, sheet_name=('Datos'),startcol=1,startrow=1)
         writer.close()
 
-def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
+def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales,Ancho,Hx,x,y):
     dic_tens_def_nodos = {}
     for num_elemento in dict_tens:
         d = 0
         for num_nodo in dict_tens[num_elemento]:
             if num_nodo not in dic_tens_def_nodos:
-                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],dict_tens[num_elemento][num_nodo][1][0],dict_tens[num_elemento][num_nodo][2][0],dict_def[num_elemento][num_nodo][0][0],dict_def[num_elemento][num_nodo][1][0],dict_def[num_elemento][num_nodo][2][0],dist_generales[num_elemento][0][d],dist_generales[num_elemento][1][d],1]
+                dic_tens_def_nodos[num_nodo] = [dict_tens[num_elemento][num_nodo][0][0],
+                                                dict_tens[num_elemento][num_nodo][1][0],
+                                                dict_tens[num_elemento][num_nodo][2][0],
+                                                dict_def[num_elemento][num_nodo][0][0],
+                                                dict_def[num_elemento][num_nodo][1][0],
+                                                dict_def[num_elemento][num_nodo][2][0],
+                                                dist_generales[num_elemento][0][d],
+                                                dist_generales[num_elemento][1][d],1]
             else:
                 for tension_def in range(3):
                     dic_tens_def_nodos[num_nodo][tension_def] += dict_tens[num_elemento][num_nodo][tension_def][0]
@@ -329,10 +370,31 @@ def prom_tensiones_deformaciones(dict_tens,dict_def,dist_generales):
             dic_tens_def_nodos[num_nodo][tension_def] /= dic_tens_def_nodos[num_nodo][8]
         ten_max = ((dic_tens_def_nodos[num_nodo][0] + dic_tens_def_nodos[num_nodo][1])/2)+math.sqrt((((dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])/2)**2)+(dic_tens_def_nodos[num_nodo][2])**2)
         dic_tens_def_nodos[num_nodo].append(ten_max)
-        if (ten_max>2.23 or ten_max<-2.23):
-            angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
-            dic_tens_def_nodos[num_nodo].append(angulo)
+        if (dic_tens_def_nodos[num_nodo][6]<=(Ancho*Hx*0.2) or dic_tens_def_nodos[num_nodo][6]>=((Ancho*Hx)-(Ancho*Hx*0.2))):
+            dic_tens_def_nodos[num_nodo].append(1)
+            if (ten_max>2.23 or ten_max<-2.23):
+                angulo = ((math.atan((2*dic_tens_def_nodos[num_nodo][2])/(dic_tens_def_nodos[num_nodo][0] - dic_tens_def_nodos[num_nodo][1])))/2)
+                dic_tens_def_nodos[num_nodo].append(angulo)
+                dic_tens_def_nodos[num_nodo].append(1)
+                dic_tens_def_nodos[num_nodo].append(1)
+                dic_tens_def_nodos[num_nodo].append(1)
+                pendiente = dic_tens_def_nodos[num_nodo][11]
+                xo = dic_tens_def_nodos[num_nodo][6]
+                yo = dic_tens_def_nodos[num_nodo][7]
+                rect = pendiente * x - pendiente * xo + yo
+                dic_tens_def_nodos[num_nodo].append(rect)
+            else:
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
+                dic_tens_def_nodos[num_nodo].append(0)
         else:
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
+            dic_tens_def_nodos[num_nodo].append(0)
             dic_tens_def_nodos[num_nodo].append(0)
     return dic_tens_def_nodos
 
