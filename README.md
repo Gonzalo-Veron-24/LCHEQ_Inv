@@ -108,4 +108,4 @@ Unos segundos después, se le solicitará que ingrese la cantidad de cargas que 
 ## Desarrollo actual
 Actualmente, se está desarrollando una representación gráfica de la mampostería analizada y la grieta correspondiente generada en su estado de rotura. Para este desarrollo, se está utilizando una biblioteca específica diseñada para trabajar con el método de elementos finitos, denominada [GMSH](https://gmsh.info/doc/texinfo/gmsh.html)
 
-##
+#### Actualizado al 23/04/24
